@@ -1,5 +1,17 @@
 local modname = "Restored Collection"
 
+DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.0",[[{{FSIZE2}}added
+- pumpkin mask stacking (by piber)
+- pumkin mask synergy with
+incubus (by piber), twisted pair, gello
+- donkey jawbone stacking (by piber)
+
+{{FSIZE2}}fixes
+- fixed melted candle not being
+affected with mouse controls (by piber)
+]],
+{"restored", "collection", "", "v1.31.0", "update"}, false, false)
+
 DeadSeaScrollsMenu.AddChangelog(modname, "v1.30.1",[[{{FSIZE2}}fixes
 - fixed encyclopedia errors
 ]],

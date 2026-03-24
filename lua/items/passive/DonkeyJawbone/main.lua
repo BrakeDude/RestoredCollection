@@ -33,7 +33,7 @@ function DonkeyJawbone:PlayerHurt(TookDamage, DamageAmount, DamageFlags, DamageS
 				local weaponType = weapon:GetWeaponType()
 				local multiShotParams = player:GetMultiShotParams(weaponType)
 				---@cast multiShotParams MultiShotParams
-				data.ExtraSpins = multiShotParams:GetNumTears()
+				data.ExtraSpins = multiShotParams:GetNumTears() + numJawbones - 1
 			else
 				data.ExtraSpins = data.ExtraSpins + (RestoredCollection:RunSave(player).MenorahFlames and RestoredCollection:RunSave(player).MenorahFlames or 0)
 				local startMax = player:GetCollectibleNum(CollectibleType.COLLECTIBLE_20_20)
@@ -43,7 +43,7 @@ function DonkeyJawbone:PlayerHurt(TookDamage, DamageAmount, DamageFlags, DamageS
 				if player:GetCollectibleNum(CollectibleType.COLLECTIBLE_MUTANT_SPIDER) > 0 then
 					startMax = startMax + player:GetCollectibleNum(CollectibleType.COLLECTIBLE_MUTANT_SPIDER) + 3 - (startMax > 0 and 2 or 0)
 				end
-				data.ExtraSpins = data.ExtraSpins + startMax
+				data.ExtraSpins = data.ExtraSpins + startMax + numJawbones - 1
 			end
 			DonkeyJawbone:SpawnJawbone(player)
 		end

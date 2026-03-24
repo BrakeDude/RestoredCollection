@@ -4,96 +4,203 @@ local Helpers = include("lua.helpers.Helpers")
 ---@param player EntityPlayer
 ---@return boolean
 local function Can360Degree(player)
-    return player:HasCollectible(CollectibleType.COLLECTIBLE_ANALOG_STICK) or 
-    player:HasCollectible(CollectibleType.COLLECTIBLE_MARKED) or player:HasCollectible(CollectibleType.COLLECTIBLE_EYE_OF_THE_OCCULT)
+	return player:HasCollectible(CollectibleType.COLLECTIBLE_ANALOG_STICK)
+		or player:HasCollectible(CollectibleType.COLLECTIBLE_MARKED)
+		or player:HasCollectible(CollectibleType.COLLECTIBLE_EYE_OF_THE_OCCULT)
+end
+
+---@param position Vector
+---@param shootDir Vector
+---@param damage number
+---@param parent Entity?
+local function ShootPumkinSeed(position, shootDir, damage, parent)
+	local tear = Isaac.Spawn(
+		EntityType.ENTITY_TEAR,
+		RestoredCollection.Enums.TearVariant.PUMPKIN_SEED,
+		0,
+		position,
+		shootDir,
+		parent
+	):ToTear()
+	tear.CollisionDamage = damage
+	local sprite = tear:GetSprite()
+	sprite:Play(sprite:GetDefaultAnimation(), true)
 end
 
 ---@param player EntityPlayer
 function PumpkinMask:FireSeeds(player)
-    local numPumpkins = player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PUMPKIN_MASK)
-    if numPumpkins > 0 and not player:IsDead() then
-        local data = Helpers.GetData(player)
-        if not data.FireDelaySeeds then
-            data.FireDelaySeeds = -1
-        end
-        data.FireDelaySeeds = math.max(-1, data.FireDelaySeeds - 1)
-        if data.FireDelaySeeds < 0 and player:GetItemState() == 0 then
-            if player:GetFireDirection() ~= Direction.NO_DIRECTION then
-                local shootVec = Helpers.GetVectorFromDirection(player:GetHeadDirection())
-                if Can360Degree(player) then
-                    shootVec = player:GetAimDirection()
-                end
-                shootVec = shootVec:Resized(9) + player.Velocity
-                if shootVec:Length() < 9 then
+	local numPumpkins = player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PUMPKIN_MASK)
+	if numPumpkins > 0 and not player:IsDead() then
+		local data = Helpers.GetData(player)
+		if not data.FireDelaySeeds then
+			data.FireDelaySeeds = -1
+		end
+		data.FireDelaySeeds = math.max(-1, data.FireDelaySeeds - 1)
+		if data.FireDelaySeeds < 0 and player:GetItemState() == 0 then
+			if player:GetFireDirection() ~= Direction.NO_DIRECTION then
+				local shootVec = Helpers.GetVectorFromDirection(player:GetHeadDirection())
+				if Can360Degree(player) then
+					shootVec = player:GetAimDirection()
+				end
+				shootVec = shootVec:Resized(9) + player:GetTearMovementInheritance(shootVec)
+				--[[if shootVec:Length() < 9 then
                     shootVec:Resize(9)
-                end
-                for i = 0, TSIL.Random.GetRandomInt(3*numPumpkins,5*numPumpkins) do
-                    Helpers.scheduleForUpdate(function ()
-                        if player:CanShoot() then
-                            local tear = Isaac.Spawn(EntityType.ENTITY_TEAR, RestoredCollection.Enums.TearVariant.PUMPKIN_SEED, 0, player.Position + player.TearsOffset, shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed, player):ToTear()
-                            tear.CollisionDamage = player.Damage * 0.4
-                            local sprite = tear:GetSprite()
-                            sprite:Play(sprite:GetDefaultAnimation(), true)
-                        end
+                end]]
+				local numPumpkinNumModifier = 2 * (numPumpkins - 1)
 
-                        for _, incubusEnt in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.INCUBUS, -1, true, false)) do
-                            local incubus = incubusEnt:ToFamiliar()
-                            if incubus.Player and GetPtrHash(incubus.Player) == GetPtrHash(player) then
-                                local tear = Isaac.Spawn(EntityType.ENTITY_TEAR, RestoredCollection.Enums.TearVariant.PUMPKIN_SEED, 0, incubus.Position, shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed, player):ToTear()
-                                tear.CollisionDamage = player.Damage * 0.4
-                                local sprite = tear:GetSprite()
-                                sprite:Play(sprite:GetDefaultAnimation(), true)
-                            end
-                        end
-                    end, 2 * i)
+				local incubuses = TSIL.Utils.Tables.Filter(
+					Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.INCUBUS, -1, true, false),
+					function(_, ent)
+						ent = ent:ToFamiliar()
+						return ent.Player and GetPtrHash(ent.Player) == GetPtrHash(player)
+					end
+				)
+
+				local gellos = TSIL.Utils.Tables.Filter(
+					Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.UMBILICAL_BABY, -1, true, false),
+					function(_, ent)
+						ent = ent:ToFamiliar()
+						return ent.Player and GetPtrHash(ent.Player) == GetPtrHash(player)
+					end
+				)
+
+				local twistedPairs = TSIL.Utils.Tables.Filter(
+					Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.TWISTED_BABY, -1, true, false),
+					function(_, ent)
+						ent = ent:ToFamiliar()
+						return ent.Player and GetPtrHash(ent.Player) == GetPtrHash(player)
+					end
+				)
+
+				local incubusDamage = player.Damage * 0.4
+				local mult = 1
+				if not Helpers.IsAnyPlayerType(player, PlayerType.PLAYER_LILITH, PlayerType.PLAYER_LILITH_B) then
+					mult = 0.75
+				end
+
+				if player:HasCollectible(CollectibleType.COLLECTIBLE_BFFS) then
+					mult = mult + 1
+				end
+
+				mult = mult + 0.25 * player:GetTrinketMultiplier(TrinketType.TRINKET_CHILD_LEASH)
+
+				for i = 0, TSIL.Random.GetRandomInt(3 + numPumpkinNumModifier, 5 + numPumpkinNumModifier) do
+					Helpers.scheduleForUpdate(function()
+						if player:CanShoot() then
+							ShootPumkinSeed(
+								player.Position + player.TearsOffset,
+								shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
+								player.Damage * 0.4,
+								player
+							)
+						end
+					end, 2 * i)
+				end
+                for i = 0, TSIL.Random.GetRandomInt(3 + numPumpkinNumModifier, 5 + numPumpkinNumModifier) do
+                    TSIL.Utils.Tables.ForEach(incubuses, function(_, incubusEnt)
+                        local incubus = incubusEnt:ToFamiliar()
+
+                        Helpers.scheduleForUpdate(function()
+                            ShootPumkinSeed(
+                                incubus.Position,
+                                shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
+                                incubusDamage * mult,
+                                player
+                            )
+                        end, 2 * i)
+                    end)
                 end
-                data.FireDelaySeeds = Helpers.ToMaxFireDelay(2/(2+numPumpkins))
-            end
-        end
-    end
+                for i = 0, TSIL.Random.GetRandomInt(3 + numPumpkinNumModifier, 5 + numPumpkinNumModifier) do
+                    TSIL.Utils.Tables.ForEach(gellos, function(_, gelloEnt)
+                        local gello = gelloEnt:ToFamiliar()
+                        local shootVecGello = shootVec
+                        if gello.Target then
+                            shootVecGello = (gello.Target.Position - gello.Position):Resized(9)
+                            shootVecGello = shootVecGello + player:GetTearMovementInheritance(shootVecGello)
+                        end
+                        Helpers.scheduleForUpdate(function()
+                            ShootPumkinSeed(
+                                gello.Position,
+                                shootVecGello:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
+                                incubusDamage * mult,
+                                player
+                            )
+                        end, 2 * i)
+                    end)
+                end
+                for i = 0, TSIL.Random.GetRandomInt(3 + numPumpkinNumModifier, 5 + numPumpkinNumModifier) do
+                    TSIL.Utils.Tables.ForEach(twistedPairs, function(_, twistedPairEnt)
+                        local twistedPair = twistedPairEnt:ToFamiliar()
+                        Helpers.scheduleForUpdate(function()
+                            ShootPumkinSeed(
+                                twistedPair.Position,
+                                shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
+                                incubusDamage * mult / 2,
+                                player
+                            )
+                        end, 2 * i)
+                    end)
+                end
+				data.FireDelaySeeds = Helpers.ToMaxFireDelay(2 / (2 + numPumpkins))
+			end
+		end
+	end
 end
 RestoredCollection:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, PumpkinMask.FireSeeds, 0)
 
 ---@param tear EntityTear
 function PumpkinMask:SeedUpdate(tear)
-    tear.SpriteRotation = tear.Velocity:GetAngleDegrees() + 90
+	tear.SpriteRotation = tear.Velocity:GetAngleDegrees() + 90
 end
-RestoredCollection:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, PumpkinMask.SeedUpdate, RestoredCollection.Enums.TearVariant.PUMPKIN_SEED)
+RestoredCollection:AddCallback(
+	ModCallbacks.MC_POST_TEAR_UPDATE,
+	PumpkinMask.SeedUpdate,
+	RestoredCollection.Enums.TearVariant.PUMPKIN_SEED
+)
 
 ---From FiendFolio
 ---@param tear Entity
 function PumpkinMask:PostSeedRemove(tear)
-    if tear.Variant == RestoredCollection.Enums.TearVariant.PUMPKIN_SEED then
-        local splat = Isaac.Spawn(EntityType.ENTITY_EFFECT, RestoredCollection.Enums.Entities.PUMPKIN_SEED_SHATTER.Variant, 0, tear.Position, Vector.Zero, tear):ToEffect()
-        splat:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
-        splat.PositionOffset = tear.PositionOffset
-        splat.SpriteOffset = tear.SpriteOffset
-        tear = tear:ToTear()
-        splat.SpriteScale = Vector(tear.Scale, tear.Scale) / 2
-        splat:Update()
-        SFXManager():Play(SoundEffect.SOUND_TEARIMPACTS, 1, 0, false, 1)
-    end
+	if tear.Variant == RestoredCollection.Enums.TearVariant.PUMPKIN_SEED then
+		local splat = Isaac.Spawn(
+			EntityType.ENTITY_EFFECT,
+			RestoredCollection.Enums.Entities.PUMPKIN_SEED_SHATTER.Variant,
+			0,
+			tear.Position,
+			Vector.Zero,
+			tear
+		):ToEffect()
+		splat:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
+		splat.PositionOffset = tear.PositionOffset
+		splat.SpriteOffset = tear.SpriteOffset
+		tear = tear:ToTear()
+		splat.SpriteScale = Vector(tear.Scale, tear.Scale) / 2
+		splat:Update()
+		SFXManager():Play(SoundEffect.SOUND_TEARIMPACTS, 1, 0, false, 1)
+	end
 end
 RestoredCollection:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, PumpkinMask.PostSeedRemove, EntityType.ENTITY_TEAR)
 
 ---@param effect EntityEffect
 function PumpkinMask:SeedPoofRemoval(effect)
-    if effect:GetSprite():IsFinished() then
-        effect:Remove()
-    end
+	if effect:GetSprite():IsFinished() then
+		effect:Remove()
+	end
 end
-RestoredCollection:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, PumpkinMask.SeedPoofRemoval, RestoredCollection.Enums.Entities.PUMPKIN_SEED_SHATTER.Variant)
+RestoredCollection:AddCallback(
+	ModCallbacks.MC_POST_EFFECT_UPDATE,
+	PumpkinMask.SeedPoofRemoval,
+	RestoredCollection.Enums.Entities.PUMPKIN_SEED_SHATTER.Variant
+)
 
 RestoredCollection:AddCallback("ON_EDITH_STOMP", function(_, player, stompDamage, bombLanding, forced, isStompPool)
-    for i = 0, TSIL.Random.GetRandomInt(3*numPumpkins,5*numPumpkins) do
-        Helpers.scheduleForUpdate(function()
-            local shootVec = Vector.FromAngle(TSIL.Random.GetRandomInt(1, 360)):Resized(9) * player.ShotSpeed
-            if not player:IsDead() then
-                local tear = Isaac.Spawn(EntityType.ENTITY_TEAR, RestoredCollection.Enums.TearVariant.PUMPKIN_SEED, 0, player.Position + player.TearsOffset, shootVec, player):ToTear()
-                tear.CollisionDamage = player.Damage * 0.4
-                local sprite = tear:GetSprite()
-                sprite:Play(sprite:GetDefaultAnimation(), true)
-            end
-        end, 2 * i)
-    end
-end, {Item = RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PUMPKIN_MASK})
+	local numPumpkins = player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PUMPKIN_MASK)
+	for i = 0, TSIL.Random.GetRandomInt(3 * numPumpkins, 5 * numPumpkins) do
+		Helpers.scheduleForUpdate(function()
+			local shootVec = Vector.FromAngle(TSIL.Random.GetRandomInt(1, 360)):Resized(9) * player.ShotSpeed
+			if not player:IsDead() then
+				ShootPumkinSeed(player.Position + player.TearsOffset, shootVec, player.Damage * 0.4, player)
+			end
+		end, 2 * i)
+	end
+end, { Item = RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PUMPKIN_MASK })
