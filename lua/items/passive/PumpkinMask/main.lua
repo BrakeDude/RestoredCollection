@@ -10,7 +10,8 @@ end
 
 ---@param player EntityPlayer
 function PumpkinMask:FireSeeds(player)
-    if player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PUMPKIN_MASK) and not player:IsDead() then
+    local numPumpkins = player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PUMPKIN_MASK)
+    if numPumpkins > 0 and not player:IsDead() then
         local data = Helpers.GetData(player)
         if not data.FireDelaySeeds then
             data.FireDelaySeeds = -1
@@ -18,26 +19,35 @@ function PumpkinMask:FireSeeds(player)
         data.FireDelaySeeds = math.max(-1, data.FireDelaySeeds - 1)
         if data.FireDelaySeeds < 0 and player:GetItemState() == 0 then
             if player:GetFireDirection() ~= Direction.NO_DIRECTION then
-                for i = 0, TSIL.Random.GetRandomInt(3,5) do
+                local shootVec = Helpers.GetVectorFromDirection(player:GetHeadDirection())
+                if Can360Degree(player) then
+                    shootVec = player:GetAimDirection()
+                end
+                shootVec = shootVec:Resized(9) + player.Velocity
+                if shootVec:Length() < 9 then
+                    shootVec:Resize(9)
+                end
+                for i = 0, TSIL.Random.GetRandomInt(3*numPumpkins,5*numPumpkins) do
                     Helpers.scheduleForUpdate(function ()
-                        local shootVec = Helpers.GetVectorFromDirection(player:GetHeadDirection())
-                        if Can360Degree(player) then
-                            shootVec = player:GetAimDirection()
-                        end
-                        shootVec = shootVec:Resized(9) + player.Velocity
-                        if shootVec:Length() < 9 then
-                            shootVec:Resize(9)
-                        end
-
-                        if not player:IsDead() then
+                        if player:CanShoot() then
                             local tear = Isaac.Spawn(EntityType.ENTITY_TEAR, RestoredCollection.Enums.TearVariant.PUMPKIN_SEED, 0, player.Position + player.TearsOffset, shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed, player):ToTear()
                             tear.CollisionDamage = player.Damage * 0.4
                             local sprite = tear:GetSprite()
                             sprite:Play(sprite:GetDefaultAnimation(), true)
                         end
+
+                        for _, incubusEnt in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.INCUBUS, -1, true, false)) do
+                            local incubus = incubusEnt:ToFamiliar()
+                            if incubus.Player and GetPtrHash(incubus.Player) == GetPtrHash(player) then
+                                local tear = Isaac.Spawn(EntityType.ENTITY_TEAR, RestoredCollection.Enums.TearVariant.PUMPKIN_SEED, 0, incubus.Position, shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed, player):ToTear()
+                                tear.CollisionDamage = player.Damage * 0.4
+                                local sprite = tear:GetSprite()
+                                sprite:Play(sprite:GetDefaultAnimation(), true)
+                            end
+                        end
                     end, 2 * i)
                 end
-                data.FireDelaySeeds = Helpers.ToMaxFireDelay(2/3)
+                data.FireDelaySeeds = Helpers.ToMaxFireDelay(2/(2+numPumpkins))
             end
         end
     end
@@ -75,7 +85,7 @@ end
 RestoredCollection:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, PumpkinMask.SeedPoofRemoval, RestoredCollection.Enums.Entities.PUMPKIN_SEED_SHATTER.Variant)
 
 RestoredCollection:AddCallback("ON_EDITH_STOMP", function(_, player, stompDamage, bombLanding, forced, isStompPool)
-    for i = 0, TSIL.Random.GetRandomInt(3,5) do
+    for i = 0, TSIL.Random.GetRandomInt(3*numPumpkins,5*numPumpkins) do
         Helpers.scheduleForUpdate(function()
             local shootVec = Vector.FromAngle(TSIL.Random.GetRandomInt(1, 360)):Resized(9) * player.ShotSpeed
             if not player:IsDead() then

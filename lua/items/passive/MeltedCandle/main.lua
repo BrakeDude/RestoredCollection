@@ -33,9 +33,14 @@ function MeltedCandle:OnPlayerUpdate(player)
         end
         return
     end
-    local isShooting = false
-    for i = 4, 7 do
-        isShooting = isShooting or Input.IsActionPressed(i, player.ControllerIndex)
+    local isShooting = player:GetFireDirection() ~= Direction.NO_DIRECTION
+    if not isShooting and player.ControllerIndex == 0 then
+        isShooting = Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1)
+    end
+    if not isShooting then
+        for i = 4, 7 do
+            isShooting = isShooting or Input.IsActionPressed(i, player.ControllerIndex)
+        end
     end
     data.shootingScale = data.shootingScale or 0
     if not data.FireEffect then

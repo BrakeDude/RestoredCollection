@@ -12,9 +12,13 @@ RestoredCollection:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, DonkeyJawbone.Post
 
 function DonkeyJawbone:PlayerHurt(TookDamage, DamageAmount, DamageFlags, DamageSource, DamageCountdownFrames)
 	local player = TookDamage:ToPlayer()
-	local data = Helpers.GetData(player)
-	if player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_DONKEY_JAWBONE) then
-		--[[if player:HasCollectible(CollectibleType.COLLECTIBLE_20_20) then
+    local numJawbones = player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_DONKEY_JAWBONE)
+	if numJawbones > 0 then
+		local data = Helpers.GetData(player)
+		--[[if numJawbones > 1 then
+			data.ExtraSpins = data.ExtraSpins + (numJawbones-1)
+		end
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_20_20) then
 			data.ExtraSpins = data.ExtraSpins + 1
 		end
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_INNER_EYE) then
