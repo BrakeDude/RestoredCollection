@@ -25,24 +25,24 @@ local function load(data)
 			"gfx/items/pick ups/bombs/costumes/dice_d6_gold.png",
 		},
 		[CollectibleType.COLLECTIBLE_ETERNAL_D6] = {
-			"gfx/items/pick ups/bombs/costumes/dice_modded.png",
-			"gfx/items/pick ups/bombs/costumes/dice_modded_gold.png",
+			"gfx/items/pick ups/bombs/costumes/dice_ed6.png",
+			"gfx/items/pick ups/bombs/costumes/dice_ed6_gold.png",
 		},
 		[CollectibleType.COLLECTIBLE_D7] = {
-			"gfx/items/pick ups/bombs/costumes/dice_modded.png",
-			"gfx/items/pick ups/bombs/costumes/dice_modded_gold.png",
+			"gfx/items/pick ups/bombs/costumes/dice_d7.png",
+			"gfx/items/pick ups/bombs/costumes/dice_d7_gold.png",
 		},
 		[CollectibleType.COLLECTIBLE_D8] = {
 			"gfx/items/pick ups/bombs/costumes/dice_d8.png",
 			"gfx/items/pick ups/bombs/costumes/dice_d8_gold.png",
 		},
 		[CollectibleType.COLLECTIBLE_D10] = {
-			"gfx/items/pick ups/bombs/costumes/dice_modded.png",
-			"gfx/items/pick ups/bombs/costumes/dice_modded_gold.png",
+			"gfx/items/pick ups/bombs/costumes/dice_d10.png",
+			"gfx/items/pick ups/bombs/costumes/dice_d10_gold.png",
 		},
 		[CollectibleType.COLLECTIBLE_D12] = {
-			"gfx/items/pick ups/bombs/costumes/dice_modded.png",
-			"gfx/items/pick ups/bombs/costumes/dice_modded_gold.png",
+			"gfx/items/pick ups/bombs/costumes/dice_d12.png",
+			"gfx/items/pick ups/bombs/costumes/dice_d12_gold.png",
 		},
 		[CollectibleType.COLLECTIBLE_D20] = {
 			"gfx/items/pick ups/bombs/costumes/dice_d20.png",
