@@ -5,6 +5,8 @@ DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.0",[[{{FSIZE2}}added
 - pumkin mask synergy with
 incubus (by piber), twisted pair, gello
 - donkey jawbone stacking (by piber)
+- d7, d10, d12 and eternal d6 dice bomb
+synergies
 
 {{FSIZE2}}fixes
 - fixed melted candle not being
