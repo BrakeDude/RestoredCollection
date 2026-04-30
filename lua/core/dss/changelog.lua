@@ -1,7 +1,7 @@
 local modname = "Restored Collection"
 
 DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.1",[[{{FSIZE2}}fixes
-- fixed eid error on launch
+- fixed eid errors on launch
 ]],
 {"restored", "collection", "", "v1.31.1", "update"}, false, false)
 
