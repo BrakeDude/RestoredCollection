@@ -1,5 +1,10 @@
 local modname = "Restored Collection"
 
+DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.1",[[{{FSIZE2}}fixes
+- fixed eid error on launch
+]],
+{"restored", "collection", "", "v1.31.1", "update"}, false, false)
+
 DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.0",[[{{FSIZE2}}added
 - pumpkin mask stacking (by piber)
 - pumkin mask synergy with
