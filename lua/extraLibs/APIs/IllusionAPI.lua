@@ -1,4 +1,4 @@
-local localversion = 1.1
+local localversion = 1.2
 local game = Game()
 local hud = game:GetHUD()
 local sfx = SFXManager()
@@ -605,6 +605,9 @@ local function load(prevData)
 			local color = Color(sColor.R, sColor.G, sColor.B, 0.45, 0.518, 0.15, 0.8)
 			local s = p:GetSprite()
 			s.Color = color
+			if p:GetSoulHearts() > 2 then
+				p:AddSoulHearts(-p:GetSoulHearts() + 2)
+			end
 			if
 				p:GetBoneHearts() > 0
 				and not (
@@ -678,7 +681,11 @@ local function load(prevData)
 				return
 			end
 			if d.IsIllusion then --or p.Parent then
-				return true
+				if pickup.Variant == PickupVariant.PICKUP_BED then
+					return false
+				else
+					return true
+				end
 			end
 		end
 	end
