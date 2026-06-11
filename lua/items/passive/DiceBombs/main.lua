@@ -2,10 +2,10 @@ local DiceBombsLocal = {}
 local Helpers = RestoredCollection.Helpers
 
 local DiceBombItemBlacklist = {
-    [CollectibleType.COLLECTIBLE_POLAROID] = true,
-    [CollectibleType.COLLECTIBLE_NEGATIVE] = true,
-    [CollectibleType.COLLECTIBLE_DADS_NOTE] = true,
-    [CollectibleType.COLLECTIBLE_NULL] = true
+	[CollectibleType.COLLECTIBLE_POLAROID] = true,
+	[CollectibleType.COLLECTIBLE_NEGATIVE] = true,
+	[CollectibleType.COLLECTIBLE_DADS_NOTE] = true,
+	[CollectibleType.COLLECTIBLE_NULL] = true,
 }
 
 local DiceBombPickupBlacklist = {
@@ -18,6 +18,12 @@ local DiceBombPickupBlacklist = {
 	[PickupVariant.PICKUP_COLLECTIBLE] = true,
 	[PickupVariant.PICKUP_BROKEN_SHOVEL] = true,
 }
+
+local function ChangeSprite(bomb)
+	local sprite = bomb:GetSprite()
+	local file = sprite:GetFilename()
+	Helpers.ChangeBombSprite(bomb, "gfx/items/pick ups/bombs/dice" .. file:sub(file:len() - 5))
+end
 
 function DiceBombsLocal:D1BombExplode(rng, position, player, radius)
 	local pickup
@@ -100,7 +106,6 @@ function DiceBombsLocal:D6BombExplode(rng, position, player, radius)
 			end
 		end
 	end
-	print(1)
 end
 --[[RestoredCollection:AddCallback(
 	RestoredCollection.Enums.Callbacks.ON_DICE_BOMB_EXPLOSION,
@@ -283,7 +288,11 @@ RestoredCollection:AddCallback(
 	CollectibleType.COLLECTIBLE_D100
 )
 
-local function InitDiceVariant(bomb)
+local function InitDiceVariant(bomb, forceDice)
+	if type(forceDice) == "number" and DiceBombsAPI.GetDiceBombsSprites(forceDice) then
+		Helpers.GetData(bomb).DiceBombVariant = forceDice
+		return
+	end
 	local player = Helpers.GetPlayerFromTear(bomb)
 	if not player then
 		return
@@ -318,7 +327,7 @@ local function InitDiceVariant(bomb)
 			if dice then
 				data.DiceBombVariant = dice
 			end
-            break
+			break
 		end
 	end
 end
@@ -417,11 +426,7 @@ function DiceBombsLocal:BombUpdate(bomb)
 	if bomb.FrameCount == 1 then
 		DiceBombsLocal:BombInit(bomb)
 		if bomb.Variant == RestoredCollection.Enums.BombVariant.BOMB_DICE then
-			local sprite = bomb:GetSprite()
-			local anim = sprite:GetAnimation()
-			local file = sprite:GetFilename()
-			sprite:Load("gfx/items/pick ups/bombs/dice" .. file:sub(file:len() - 5), true)
-			sprite:Play(anim, true)
+			ChangeSprite(bomb)
 		end
 	end
 
@@ -521,3 +526,34 @@ RestoredCollection:AddCallback(
 	end,
 	RestoredCollection.Enums.CollectibleType.COLLECTIBLE_DICE_BOMBS
 )
+
+---@param position Vector
+---@param forceDice CollectibleType | number?
+---@param spawner Entity?
+local function SpawnDiceBomb(position, forceDice, spawner)
+	local bomb = Helpers.SpawnBomb(position, RestoredCollection.Enums.BombVariant.BOMB_DICE, spawner, 0, {
+		["DICE_BOMB"] = {
+			func = InitDiceVariant,
+			args = {forceDice},
+		}
+	})
+	ChangeSprite(bomb)
+end
+
+---@param bomb EntityBomb
+---@param forceDice CollectibleType | number?
+local function MakeBombDice(bomb, forceDice)
+	BombFlagsAPI.AddCustomBombFlag(
+		bomb,
+		"DICE_BOMB",
+		RestoredCollection.Enums.BombVariant.BOMB_DICE,
+		InitDiceVariant,
+		bomb, forceDice
+	)
+	ChangeSprite(bomb)
+end
+
+RestoredCollection.Bombs.DiceBombs = {
+	Spawn = SpawnDiceBomb,
+	AddFlagToBomb = MakeBombDice,
+}

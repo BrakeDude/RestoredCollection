@@ -14,6 +14,7 @@ include("lua.helpers.Helpers")
 
 RestoredCollection.SaveManager = include("lua.core.save_manager")
 RestoredCollection.SaveManager.Init(RestoredCollection)
+RestoredCollection.Bombs = {}
 include("lua.core.saving_system")
 
 --apis
