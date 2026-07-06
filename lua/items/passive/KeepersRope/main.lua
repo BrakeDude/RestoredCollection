@@ -235,7 +235,7 @@ end
 RestoredCollection:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, KeepersRope.NoSoap)
 
 function KeepersRope:RopeReplacement(keeper)
-	if not RestoredCollection:RunSave()["HasMorphedKeepersRope"] then
+	if not RestoredCollection:RunSave()["HasMorphedKeepersRope"] and not Helpers.IsItemDisabled(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_KEEPERS_ROPE) then
 		for __,pickup in ipairs(Isaac.FindByType(5,100)) do
 			pickup = pickup:ToPickup()
 			if (pickup.Position - keeper.Position):Length() <= 10 and pickup.FrameCount == 0 and
