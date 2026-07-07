@@ -1,5 +1,11 @@
 local modname = "Restored Collection"
 
+DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.3",[[{{FSIZE2}}fixes
+- fixed keeper's rope spawning when
+disabled
+]],
+{"restored", "collection", "", "v1.31.3", "update"}, false, false)
+
 DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.2",[[{{FSIZE2}}fixes
 - fixed illusions getting more than
 one hp
