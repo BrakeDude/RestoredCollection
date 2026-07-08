@@ -270,7 +270,7 @@ if REPENTOGON then
     ---@param offset Vector
     ---@return Vector | boolean | nil
     function OlLopper:PreNeckPieceRender(neck, offset)
-        if Game():GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then
+        if RestoredCollection.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then
             return Vector(0, 21)
         end
     end
@@ -359,7 +359,7 @@ if REPENTOGON then
     ---@param player EntityPlayer
     ---@param renderPos Vector
     function OlLopper:PrePlayerRenderHead(player, renderPos)
-        if not player:IsHeadless() and Game():GetRoom():GetRenderMode() ~= RenderMode.RENDER_WATER_REFLECT then
+        if not player:IsHeadless() and RestoredCollection.Room():GetRenderMode() ~= RenderMode.RENDER_WATER_REFLECT then
             local headHelper = Isaac.FindByType(EntityType.ENTITY_FAMILIAR, OlLopper.HEAD_HELPER.Variant)[1]
             if headHelper and GetPtrHash(headHelper:ToFamiliar().Player) == GetPtrHash(player) then
                 local pos = headHelper.Position + (player.CanFly and OlLopper.HEAD_FLYING_OFFSET or Vector.Zero) + player.PositionOffset
@@ -372,7 +372,7 @@ if REPENTOGON then
     ---@param player EntityPlayer
     ---@param renderPos Vector
     function OlLopper:PrePlayerRenderReflection(player, renderPos)
-        if Game():GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then
+        if RestoredCollection.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then
             local headHelper = Isaac.FindByType(EntityType.ENTITY_FAMILIAR, OlLopper.HEAD_HELPER.Variant)[1]
             if headHelper and GetPtrHash(headHelper:ToFamiliar().Player) == GetPtrHash(player) then
                 player:RenderHead(Isaac.WorldToRenderPosition(headHelper.Position) + renderPos)

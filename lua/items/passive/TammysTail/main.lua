@@ -33,7 +33,7 @@ RestoredCollection:AddCallback(
 
 
 function TammysTail:RoomClear()
-    rewardSpawnFrame = Game():GetFrameCount()
+    rewardSpawnFrame = RestoredCollection.Game:GetFrameCount()
 end
 RestoredCollection:AddCallback(
     ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD,
@@ -42,7 +42,7 @@ RestoredCollection:AddCallback(
 
 ---@function
 function TammysTail:SpawnClearReward(type, variant, subtype, pos, vel, spawner, seed)
-    if rewardSpawnFrame == Game():GetFrameCount() and type == EntityType.ENTITY_PICKUP and not PickupBlacklist[variant] then
+    if rewardSpawnFrame == RestoredCollection.Game:GetFrameCount() and type == EntityType.ENTITY_PICKUP and not PickupBlacklist[variant] then
 
         for _, player in ipairs(Helpers.GetPlayers(true)) do
             local data = Helpers.GetData(player)

@@ -33,7 +33,7 @@ RestoredCollection:AddCallback(ModCallbacks.MC_PRE_BOMB_COLLISION, BombCollision
 PillCrusher:AddPillCrusherEffect(PillEffect.PILLEFFECT_EXPLOSIVE_DIARRHEA, "Explosive Diarrhea",
 function (_, rng, _, isHorse)
     if isHorse then
-        local room = Game():GetRoom()
+        local room = RestoredCollection.Room()
         local pos = room:GetCenterPos()
         room:MamaMegaExplosion(pos)
         return

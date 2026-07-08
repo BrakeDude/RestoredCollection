@@ -2,7 +2,7 @@ BethsHeart = {}
 local BethsHeartLocal = {}
 local Helpers = RestoredCollection.Helpers
 local bethsheartdesc = Isaac.GetItemConfig():GetCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_BETHS_HEART)
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 BethsHeart.HeartCharges = {
 	[HeartSubType.HEART_BLACK] = 3,
@@ -160,7 +160,7 @@ function BethsHeartLocal:BethInputUpdate(player)
 				local battery = player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) and 2 or 1
 				if item and charge < item.MaxCharges * battery and item.ChargeType ~= 1 and player:GetActiveItem(slot) ~= CollectibleType.COLLECTIBLE_ALABASTER_BOX then
 					---@diagnostic disable-next-line: param-type-mismatch
-					Game():GetHUD():FlashChargeBar(player, slot)
+					RestoredCollection.HUD:FlashChargeBar(player, slot)
 					local charging
 					if charge + heart.Hearts < item.MaxCharges * battery then
 						charging = charge + heart.Hearts
@@ -190,23 +190,23 @@ function BethsHeartLocal:BethInputUpdate(player)
 				if Input.IsActionTriggered(4, idx) then
 					heartData.ShootButtonPressed = 4
 					heartData.ShootButtonState = "listening for second tap"
-					heartData.PressFrame = Game():GetFrameCount()
+					heartData.PressFrame = RestoredCollection.Game:GetFrameCount()
 				elseif Input.IsActionTriggered(5, idx) then
 					heartData.ShootButtonPressed = 5
 					heartData.ShootButtonState = "listening for second tap"
-					heartData.PressFrame = Game():GetFrameCount()
+					heartData.PressFrame = RestoredCollection.Game:GetFrameCount()
 				elseif Input.IsActionTriggered(6, idx) then
 					heartData.ShootButtonPressed = 6
 					heartData.ShootButtonState = "listening for second tap"
-					heartData.PressFrame = Game():GetFrameCount()
+					heartData.PressFrame = RestoredCollection.Game:GetFrameCount()
 				elseif Input.IsActionTriggered(7, idx) then
 					heartData.ShootButtonPressed = 7
 					heartData.ShootButtonState = "listening for second tap"
-					heartData.PressFrame = Game():GetFrameCount()
+					heartData.PressFrame = RestoredCollection.Game:GetFrameCount()
 				end
 			end
 
-			if heartData.ShootButtonPressed and heartData.PressFrame and (Game():GetFrameCount() <= heartData.PressFrame + 10) and heart.State == 0 then
+			if heartData.ShootButtonPressed and heartData.PressFrame and (RestoredCollection.Game:GetFrameCount() <= heartData.PressFrame + 10) and heart.State == 0 then
 				if not Input.IsActionTriggered(heartData.ShootButtonPressed, idx) and heartData.ShootButtonState == "listening for second tap" then
 					heartData.ShootButtonState = "button released"
 				end

@@ -1,6 +1,11 @@
 local SafetyBombsMod = {}
 local Helpers = RestoredCollection.Helpers
 
+local function ChangeSprite(bomb)
+	local sprite = bomb:GetSprite()
+	local file = sprite:GetFilename()
+	Helpers.ChangeBombSprite(bomb, "gfx/items/pick ups/bombs/safety" .. file:sub(file:len() - 5))
+end
 
 local SpecialSynergies = {
 	[TearFlags.TEAR_STICKY] = function (player, entity)
@@ -49,11 +54,7 @@ function SafetyBombsMod:BombUpdate(bomb)
 	if bomb.FrameCount == 1 then
         SafetyBombsMod:BombInit(bomb)
         if bomb.Variant == RestoredCollection.Enums.BombVariant.BOMB_SAFETY then
-            local sprite = bomb:GetSprite()
-            local anim = sprite:GetAnimation()
-            local file = sprite:GetFilename()
-            sprite:Load("gfx/items/pick ups/bombs/safety"..file:sub(file:len()-5), true)
-            sprite:Play(anim, true)
+			ChangeSprite(bomb)
         end
     end
 	if player then
@@ -120,7 +121,7 @@ local function DoRenderRadar(bomb)
 	for i, p in ipairs(Isaac.FindInRadius(bomb.Position, Helpers.GetBombRadiusFromDamage(bomb.ExplosionDamage,isBomber) * bomb.RadiusMultiplier, EntityPartition.PLAYER)) do
 		data.BombRadar.SafetyBombTrigger = true
 	end
-	if not Game():IsPaused() then
+	if not RestoredCollection.Game:IsPaused() then
 		if data.BombRadar.SafetyBombTrigger then
 			if data.BombRadar.SafetyBombTransparency < 1 then
 				data.BombRadar.SafetyBombTransparency = data.BombRadar.SafetyBombTransparency + 0.05
@@ -130,18 +131,18 @@ local function DoRenderRadar(bomb)
 		end
 	end
 	if data.BombRadar.SafetyBombTransparency > 0 then
-		if not Game():IsPaused() then
+		if not RestoredCollection.Game:IsPaused() then
 			data.BombRadar.Sprite:Update()
 		end
 		data.BombRadar.Sprite.Color = Color(1,1,1,data.BombRadar.SafetyBombTransparency)
-		data.BombRadar.Sprite:Render(Game():GetRoom():WorldToScreenPosition(bomb.Position))
+		data.BombRadar.Sprite:Render(RestoredCollection.Room():WorldToScreenPosition(bomb.Position))
 	elseif data.BombRadar.SafetyBombTransparency <= 0 then
 		data.BombRadar = nil
 	end
 end
 
 function SafetyBombsMod:BombRadar(bomb)
-	if Game():GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then return end
+	if RestoredCollection.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then return end
 	local data = Helpers.GetData(bomb)
 	
 	if BombFlagsAPI.HasCustomBombFlag(bomb, "SAFETY_BOMB") then
@@ -170,3 +171,23 @@ function SafetyBombsMod:IFramesAfterStomp(player, frames, bombLanding, killedEne
 	end
 end
 RestoredCollection:AddCallback("ON_EDITH_STOMP_LANDING_IFRAMES", SafetyBombsMod.IFramesAfterStomp)
+
+---@param position Vector
+---@param spawner Entity?
+local function SpawnSafetyBomb(position, spawner)
+	local bomb = Helpers.SpawnBomb(position, RestoredCollection.Enums.BombVariant.BOMB_SAFETY, spawner, 0, {
+		"SAFETY_BOMB",
+	})
+	ChangeSprite(bomb)
+end
+
+---@param bomb EntityBomb
+local function MakeBombSafe(bomb)
+	BombFlagsAPI.AddCustomBombFlag(bomb, "SAFETY_BOMB", RestoredCollection.Enums.BombVariant.BOMB_SAFETY)
+	ChangeSprite(bomb)
+end
+
+RestoredCollection.Bombs.SafetyBombs = {
+	Spawn = SpawnSafetyBomb,
+	AddFlagToBomb = MakeBombSafe
+}

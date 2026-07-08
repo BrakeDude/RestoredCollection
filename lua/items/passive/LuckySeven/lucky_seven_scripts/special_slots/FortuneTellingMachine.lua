@@ -1,7 +1,7 @@
 local LuckySevenSlot = include("lua.items.passive.LuckySeven.lucky_seven_scripts.LuckySevenSlot")
 local FortuneTellingMachine = LuckySevenSlot:New("gfx/lucky_seven_fortune_machine.anm2", 180)
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 ---@param player EntityPlayer
 ---@return boolean
@@ -24,7 +24,7 @@ end
 ---@param slot Entity
 local function SpawnRandomLightRay(slot)
     local rng = slot:GetDropRNG()
-    local room = Game():GetRoom()
+    local room = RestoredCollection.Room()
     local randomGridIndex = room:GetRandomTileIndex(rng:Next())
     local spawningPos = room:GetGridPosition(randomGridIndex)
 

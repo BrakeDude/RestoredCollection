@@ -67,7 +67,7 @@ local function RemoveStoreCreditFromPlayer(player) -- Partially from FF
 end
 
 local function TryRemoveStoreCredit(player)
-	if Game():GetRoom():GetType() == RoomType.ROOM_SHOP then
+	if RestoredCollection.Room():GetType() == RoomType.ROOM_SHOP then
 		if player:HasTrinket(TrinketType.TRINKET_STORE_CREDIT) then
 			RemoveStoreCreditFromPlayer(player)
 		else
@@ -84,7 +84,7 @@ local function TryRemoveStoreCredit(player)
 end
 
 function Helpers.HereticBattle(enemy)
-	local room = Game():GetRoom()
+	local room = RestoredCollection.Room()
 	if room:GetType() == RoomType.ROOM_BOSS and room:GetBossID() == 81 and enemy.Type == EntityType.ENTITY_EXORCIST then
 		return true
 	end
@@ -171,7 +171,7 @@ function Helpers.InBoilerMirrorWorld()
 end
 
 function Helpers.InMirrorWorld()
-	return Game():GetRoom():IsMirrorWorld() or Helpers.InBoilerMirrorWorld()
+	return RestoredCollection.Room():IsMirrorWorld() or Helpers.InBoilerMirrorWorld()
 end
 
 ---@param enemy Entity
@@ -338,11 +338,11 @@ function Helpers.ChargeBowl(player)
 			local charge = Helpers.GetCharge(player, slot)
 			if charge < 6 * Helpers.BatteryChargeMult(player) then
 				player:SetActiveCharge(charge + 1, slot)
-				Game():GetHUD():FlashChargeBar(player, slot)
+				RestoredCollection.HUD:FlashChargeBar(player, slot)
 				if charge >= 5 then
-					SFXManager():Play(SoundEffect.SOUND_ITEMRECHARGE)
+					RestoredCollection.SFX:Play(SoundEffect.SOUND_ITEMRECHARGE)
 				else
-					SFXManager():Play(SoundEffect.SOUND_BEEP)
+					RestoredCollection.SFX:Play(SoundEffect.SOUND_BEEP)
 				end
 			end
 		end
@@ -372,7 +372,7 @@ function Helpers.GetNearestEnemy(_pos)
 		end
 	end
 	if distance == 9999999 then
-		return Game():GetNearestPlayer(_pos)
+		return RestoredCollection.Game:GetNearestPlayer(_pos)
 	else
 		return closestPos
 	end
@@ -506,8 +506,8 @@ end
 ---@param player EntityPlayer
 ---@param rng RNG
 function Helpers.TurnEnemyIntoGoldenMachine(enemy, player, rng)
-	Game():ShakeScreen(7)
-	SFXManager():Play(SoundEffect.SOUND_CASH_REGISTER)
+	RestoredCollection.Game:ShakeScreen(7)
+	RestoredCollection.SFX:Play(SoundEffect.SOUND_CASH_REGISTER)
 	enemy:Remove()
 
 	local machinesToUse = {}

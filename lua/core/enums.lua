@@ -110,7 +110,6 @@ Enums.BombVariant = {
 	BOMB_SAFETY = Isaac.GetEntityVariantByName("Safety Bomb"),
 	BOMB_DICE = Isaac.GetEntityVariantByName("Dice Bomb"),
 	BOMB_BLANK = Isaac.GetEntityVariantByName("Blank Bomb"),
-	BOMB_THUNDER = Isaac.GetEntityVariantByName("Thunder Bomb"),
 }
 
 Enums.TearVariant = {

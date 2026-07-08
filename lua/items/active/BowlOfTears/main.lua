@@ -149,7 +149,7 @@ function BowlOfTears:BowlShoot(player)
 				if col > 0 then
 					local dropCharge = Helpers.GetCharge(player, ActiveSlot.SLOT_PRIMARY)
 					player:RemoveCollectible(col, false, ActiveSlot.SLOT_PRIMARY, false)
-					local room = Game():GetRoom()
+					local room = RestoredCollection.Room()
 					local pos = room:FindFreePickupSpawnPosition(player.Position , 40)
 					local pickup = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, col, pos, Vector.Zero, nil):ToPickup()
 					pickup.Touched = true

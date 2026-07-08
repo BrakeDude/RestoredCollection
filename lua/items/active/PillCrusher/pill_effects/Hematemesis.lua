@@ -69,7 +69,7 @@ function (_, rng, _, isHorse)
             if isHorse then num = rng:RandomInt(3) + 2 end
 
             for _ = 1, num do
-                local spawningPos = Game():GetRoom():FindFreePickupSpawnPosition(enemy.Position)
+                local spawningPos = RestoredCollection.Room():FindFreePickupSpawnPosition(enemy.Position)
 
                 Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, subtype, spawningPos,Vector.Zero,nil)
             end

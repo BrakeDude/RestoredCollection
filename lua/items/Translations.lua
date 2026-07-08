@@ -70,7 +70,7 @@ local function ShowTranslation(queue, translationTable)
     if translations then
         local translation = translations[queue.ID]
         if translation then
-            Game():GetHUD():ShowItemText(translation[1], translation[2])
+            RestoredCollection.HUD:ShowItemText(translation[1], translation[2])
         end
     end
 end

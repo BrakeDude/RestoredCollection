@@ -20,7 +20,7 @@ end
 ---@param entity Entity
 ---@return GridEntity[]
 function GetCloseGridEntities(entity)
-    local room = Game():GetRoom()
+    local room = RestoredCollection.Room()
     local gridEntities = {}
 
     for x = -1, 1, 1 do

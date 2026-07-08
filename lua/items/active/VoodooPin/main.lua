@@ -1,6 +1,6 @@
 local VoodooPin = {}
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 function VoodooPin:DisableSwitching(entity, hook, button)
 	if entity and entity:ToPlayer() then
@@ -125,7 +125,7 @@ function VoodooPin:VoodooThrow(player)
 				if col > 0 then
 					local dropCharge = Helpers.GetCharge(player, ActiveSlot.SLOT_PRIMARY)
 					player:RemoveCollectible(col, false, ActiveSlot.SLOT_PRIMARY, false)
-					local room = Game():GetRoom()
+					local room = RestoredCollection.Room()
 					local pos = room:FindFreePickupSpawnPosition(player.Position , 40)
 					local pickup = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, col, pos, Vector.Zero, nil):ToPickup()
 					pickup.Touched = true
@@ -175,7 +175,7 @@ function VoodooPin:VoodooHit(tear,collider)
 			data.VoodooTimer = 150
 		end
 
-		Game():ShakeScreen(7)
+		RestoredCollection.Game:ShakeScreen(7)
 		sfx:Play(SoundEffect.SOUND_DEVILROOM_DEAL, 0.5)
 
 		for _ = 1, 2 + math.random(3), 1 do
@@ -204,12 +204,12 @@ function VoodooPin:RenderVoodooCurse(player)
 
 	data.SwapedEnemy:SetColor(Color(0.518, 0.15, 0.8), 2, 1, false, false)
 
-	if Game():GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then return end
+	if RestoredCollection.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then return end
 
 	if not voodoo:IsPlaying("Curse") then
 		voodoo:Play("Curse")
 		voodoo.PlaybackSpeed = 0.4
-	elseif not Game():IsPaused() then
+	elseif not RestoredCollection.Game:IsPaused() then
 		voodoo:Update()
 	end
 
@@ -218,7 +218,7 @@ function VoodooPin:RenderVoodooCurse(player)
 	---@diagnostic disable-next-line: assign-type-mismatch
 	voodoo.Offset = data.SwapedEnemy:GetSprite().Offset - Vector(0.8, size * (data.SwapedEnemy.SizeMulti.Y * 2.8))
 	voodoo.Color = Color(1,1,1,0.8)
-	voodoo:Render(Game():GetRoom():WorldToScreenPosition(data.SwapedEnemy.Position),Vector.Zero,Vector.Zero)
+	voodoo:Render(RestoredCollection.Room():WorldToScreenPosition(data.SwapedEnemy.Position),Vector.Zero,Vector.Zero)
 end
 
 

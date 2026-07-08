@@ -1,6 +1,6 @@
 local BookOfDespair = {}
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 function BookOfDespair:UseBookOfDespair(_Type, RNG, player, flags, slot, data)
 	if flags & UseFlag.USE_CARBATTERY == 0 then

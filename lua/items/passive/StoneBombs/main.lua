@@ -1,6 +1,12 @@
 local StoneBombs = {}
 local Helpers = RestoredCollection.Helpers
 
+local function ChangeSprite(bomb)
+	local sprite = bomb:GetSprite()
+	local file = sprite:GetFilename()
+	Helpers.ChangeBombSprite(bomb, "gfx/items/pick ups/bombs/stone" .. file:sub(file:len() - 5))
+end
+
 local directions = {
 	0,
 	90,
@@ -64,11 +70,7 @@ function StoneBombs:BombUpdate(bomb)
 	if bomb.FrameCount == 1 then
         StoneBombs:BombInit(bomb)
         if bomb.Variant == RestoredCollection.Enums.BombVariant.BOMB_STONE then
-            local sprite = bomb:GetSprite()
-            local anim = sprite:GetAnimation()
-            local file = sprite:GetFilename()
-            sprite:Load("gfx/items/pick ups/bombs/stone"..file:sub(file:len()-5), true)
-            sprite:Play(anim, true)
+			ChangeSprite(bomb)
         end
     end
 
@@ -93,3 +95,23 @@ RestoredCollection:AddCallback("ON_EDITH_STOMP_EXPLOSION", function(_, player, b
 		CustomShockwaveAPI:SpawnCustomCrackwave(position, player, 30, dir, 2, bombDamage / 2, bombDamage)
 	end
 end, { Item = RestoredCollection.Enums.CollectibleType.COLLECTIBLE_STONE_BOMBS })
+
+---@param position Vector
+---@param spawner Entity?
+local function SpawnStoneBomb(position, spawner)
+	local bomb = Helpers.SpawnBomb(position, RestoredCollection.Enums.BombVariant.BOMB_SAFETY, spawner, 0, {
+		"STONE_BOMB",
+	})
+	ChangeSprite(bomb)
+end
+
+---@param bomb EntityBomb
+local function MakeBombStone(bomb)
+	BombFlagsAPI.AddCustomBombFlag(bomb, "STONE_BOMB", RestoredCollection.Enums.BombVariant.BOMB_SAFETY)
+	ChangeSprite(bomb)
+end
+
+RestoredCollection.Bombs.StoneBombs = {
+	Spawn = SpawnStoneBomb,
+	AddFlagToBomb = MakeBombStone
+}

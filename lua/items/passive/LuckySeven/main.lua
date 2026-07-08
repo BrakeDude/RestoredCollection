@@ -22,7 +22,7 @@ RestoredCollection.LuckySevenSpecialSlots = {
 if REPENTOGON then
     function LuckySeven:Coins(collectible, charge, firstTime, slot, VarData, player)
         if firstTime and collectible == RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN then
-            local room = Game():GetRoom()
+            local room = RestoredCollection.Room()
             for _ = 1, 7, 1 do
                 local spawningPos = room:FindFreePickupSpawnPosition(player.Position, 1, true)
                 Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY, spawningPos, Vector.Zero, player)
@@ -46,7 +46,7 @@ else
 		end
 		local data = Helpers.GetData(player)
 		if data.LuckySevenCount and player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN) > data.LuckySevenCount then
-			local room = Game():GetRoom()
+			local room = RestoredCollection.Room()
             for _ = 1, 7, 1 do
                 local spawningPos = room:FindFreePickupSpawnPosition(player.Position, 1, true)
                 Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY, spawningPos, Vector.Zero, player)

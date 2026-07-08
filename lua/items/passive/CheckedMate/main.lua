@@ -1,9 +1,9 @@
 local CheckedMateMod = {}
-local game = Game()
+local game = RestoredCollection.Game
 local Helpers = RestoredCollection.Helpers
 
 local checkedMateDesc = Isaac.GetItemConfig():GetCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_CHECKED_MATE)
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 -- Main code
 local Settings = {

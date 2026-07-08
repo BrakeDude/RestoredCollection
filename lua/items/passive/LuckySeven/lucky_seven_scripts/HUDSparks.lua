@@ -15,7 +15,7 @@ SevenShinySparks = {
 local wasGamePaused = false
 
 function HUDSparks:OnRender()
-    local isGamePaused = Game():IsPaused()
+    local isGamePaused = RestoredCollection.Game:IsPaused()
     
     if isGamePaused and not wasGamePaused then
         for _, sparks in pairs(SevenShinySparks) do
@@ -198,12 +198,12 @@ local function RenderSparks(sparks)
 end
 
 local function RenderOnHud()
-    if not Game():GetHUD():IsVisible() then return end
+    if not RestoredCollection.HUD:IsVisible() then return end
     local anyPlayer = REPENTOGON and PlayerManager.AnyoneHasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN) 
     or #Helpers.GetPlayersByCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN) > 0
     if not anyPlayer then return end
 
-    local player = Game():GetPlayer(0)
+    local player = RestoredCollection.Game:GetPlayer(0)
     if player:GetNumCoins() % 10 == 7 then
         RenderSparks(SevenShinySparks.Coins)
     end

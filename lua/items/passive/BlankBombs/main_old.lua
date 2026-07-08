@@ -4,7 +4,7 @@ local BombsInRoom = {}
 local RocketsAboutToExplode = {}
 
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 ---@param bomb Entity
 ---@return boolean
@@ -49,7 +49,7 @@ local function DoBlankEffect(center, radius)
 	blankExplosion.Color = Color(1, 1, 1, math.min(1, radius/90))
 
 	--Do screen wobble
-	Game():MakeShockwave(center, .035, .025, 10)
+	RestoredCollection.Game:MakeShockwave(center, .035, .025, 10)
 
 	--Remove projectiles in radius
 	for _, projectile in ipairs(Isaac.FindByType(EntityType.ENTITY_PROJECTILE)) do
@@ -148,8 +148,8 @@ function BlankBombsMod:OnBombInitLate(bomb)
 		end
 
 		local playerIndex = Helpers.GetPlayerIndex(player)
-		for i = 0, Game():GetNumPlayers() - 1, 1 do
-			local otherPlayer = Game():GetPlayer(i)
+		for i = 0, RestoredCollection.Game:GetNumPlayers() - 1, 1 do
+			local otherPlayer = RestoredCollection.Game:GetPlayer(i)
 
 			if otherPlayer.Parent and otherPlayer.Parent.Type == EntityType.ENTITY_PLAYER then
 				local otherPlayerParentIndex = Helpers.GetPlayerIndex(otherPlayer.Parent:ToPlayer())

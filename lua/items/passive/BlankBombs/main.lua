@@ -4,7 +4,7 @@ local BombsInRoom = {}
 local RocketsAboutToExplode = {}
 
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 ---@param bomb Entity
 ---@return boolean
@@ -87,10 +87,15 @@ local function InstaExplode(bomb, player)
 	bomb:Update()
 end
 
+---@param bomb EntityBomb
 local function ChangeSprite(bomb)
 	local sprite = bomb:GetSprite()
 	local file = sprite:GetFilename()
-	Helpers.ChangeBombSprite(bomb, "gfx/items/pick ups/bombs/blank" .. file:sub(file:len() - 5))
+	local prefix = "gfx/items/pick ups/bombs/blank"
+	if bomb:HasTearFlags(TearFlags.TEAR_BRIMSTONE_BOMB) then
+		prefix = prefix .. "_brimstone"
+	end
+	Helpers.ChangeBombSprite(bomb, prefix .. file:sub(file:len() - 5))
 end
 
 ---@param bomb EntityBomb
@@ -133,7 +138,7 @@ local function DoBlankEffect(center, radius)
 	blankExplosion.Color = Color(1, 1, 1, math.min(1, radius / 90))
 
 	--Do screen wobble
-	Game():MakeShockwave(center, 0.035, 0.025, 10)
+	RestoredCollection.Game:MakeShockwave(center, 0.035, 0.025, 10)
 
 	--Remove projectiles in radius
 	for _, projectile in ipairs(Isaac.FindByType(EntityType.ENTITY_PROJECTILE)) do

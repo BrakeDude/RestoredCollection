@@ -1,7 +1,7 @@
 local LuckySevenSlot = include("lua.items.passive.LuckySeven.lucky_seven_scripts.LuckySevenSlot")
 local CraneGame = LuckySevenSlot:New("gfx/lucky_seven_crane_game.anm2", 180)
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 ---@param slot Entity
 ---@return Entity|nil

@@ -1,6 +1,6 @@
 local DonkeyJawbone = {}
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 function DonkeyJawbone:PostNewRoom()
 	for _, player in pairs(Helpers.GetPlayers()) do

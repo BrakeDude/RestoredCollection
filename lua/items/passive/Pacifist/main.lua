@@ -1,7 +1,7 @@
 local Helpers = RestoredCollection.Helpers
 local PacifistMod = {}
-local game = Game()
-local sfx = SFXManager()
+local game = RestoredCollection.Game
+local sfx = RestoredCollection.SFX
 
 local SpecialRoomPickups = {
 	[RoomType.ROOM_TREASURE] = PickupVariant.PICKUP_LOCKEDCHEST,

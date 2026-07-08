@@ -1,5 +1,5 @@
 local KeepersRope = {}
-local game = Game()
+local game = RestoredCollection.Game
 local Helpers = RestoredCollection.Helpers
 
 local coinIndicator = Sprite()
@@ -189,7 +189,7 @@ RestoredCollection:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, KeepersRope.Mone
 
 function KeepersRope:MoneyMoneyMoneyMoneyMoney(npc)
 	local data = Helpers.GetData(npc)
-	if Game():GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then return end
+	if RestoredCollection.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then return end
 	if data.CoinsToBeat and data.CoinsToBeat > 0 and npc.Visible then
 		local color = Color(1,1,1,1)
 		color:SetColorize(1,0.5,0,0.6)

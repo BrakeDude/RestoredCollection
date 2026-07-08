@@ -72,7 +72,7 @@ local SpiderPerEntityPoop = {
 
 PillCrusher:AddPillCrusherEffect(PillEffect.PILLEFFECT_INFESTED_EXCLAMATION, "Infested!",
 function (_, _, _, isHorse)
-    local room = Game():GetRoom()
+    local room = RestoredCollection.Room()
 
     local roomSize = room:GetGridSize()
 

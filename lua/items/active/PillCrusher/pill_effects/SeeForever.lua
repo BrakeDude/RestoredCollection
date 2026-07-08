@@ -4,7 +4,7 @@ function (player, rng, _, isHorse)
     player:UseCard(Card.CARD_SOUL_CAIN, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
 
     if isHorse then
-        local level = Game():GetLevel()
+        local level = RestoredCollection.Level
 
         local roomIndex = level:QueryRoomTypeIndex(RoomType.ROOM_ULTRASECRET, false, rng, true)
         local ultraSecretRoom = level:GetRoomByIdx(roomIndex)

@@ -17,15 +17,14 @@ RestoredCollection.SaveManager.Utility.AddDefaultFloorData(
 )
 
 RestoredCollection.Game = Game()
-RestoredCollection.Level = function()
-	return RestoredCollection.Game:GetLevel()
-end
+RestoredCollection.Level = RestoredCollection.Game:GetLevel()
 RestoredCollection.Room = function()
 	return RestoredCollection.Game:GetRoom()
 end
 RestoredCollection.ItemPool = RestoredCollection.Game:GetItemPool()
 RestoredCollection.HUD = RestoredCollection.Game:GetHUD()
 RestoredCollection.RNG = RNG()
+RestoredCollection.SFX = SFXManager()
 
 RestoredCollection:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
 	RestoredCollection.RNG:SetSeed(RestoredCollection.Game:GetSeeds():GetStartSeed(), 35)

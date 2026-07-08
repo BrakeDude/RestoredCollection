@@ -1,5 +1,5 @@
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 local TeleportAnimFrames = {
 	{Scale = Vector(0.9, 1.1), Offset = Vector(0, 9)},
@@ -16,8 +16,8 @@ local function NewTeleRoom()
 	local monsterTeleTable = RestoredCollection:FloorSave()["MonsterTeleTable"]
 	if #monsterTeleTable <= 0 then return end
 
-	local roomIDX = Game():GetLevel():GetCurrentRoomDesc().ListIndex
-	local room = Game():GetRoom()
+	local roomIDX = RestoredCollection.Level:GetCurrentRoomDesc().ListIndex
+	local room = RestoredCollection.Room()
 
 	for index, teleMonster in ipairs(monsterTeleTable) do
 		if teleMonster.RoomIDX == roomIDX then
@@ -29,7 +29,7 @@ local function NewTeleRoom()
 				spawnpos = teleMonster.SpawnPos
 			end
 
-			local enemy = Game():Spawn(teleMonster.Type, teleMonster.Variant, spawnpos, Vector.Zero, nil, teleMonster.SubType, teleMonster.Seed):ToNPC()
+			local enemy = RestoredCollection.Game:Spawn(teleMonster.Type, teleMonster.Variant, spawnpos, Vector.Zero, nil, teleMonster.SubType, teleMonster.Seed):ToNPC()
 
 			if teleMonster.ChampionIDX ~= -1 then
 				enemy:MakeChampion(teleMonster.Seed, teleMonster.ChampionIDX,true)
@@ -60,7 +60,7 @@ RestoredCollection:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, NewTeleRoom)
 
 
 local function CleanRoom()
-    local level = Game():GetLevel()
+    local level = RestoredCollection.Level
 	local currentRoomIndex = level:GetCurrentRoomDesc().ListIndex
 	local newMonsterTeleTable = {}
 	local monsterTeleTable = RestoredCollection:FloorSave()["MonsterTeleTable"]
@@ -76,7 +76,7 @@ end
 
 local wasClear = true
 local function OnUpdate()
-	local room = Game():GetRoom()
+	local room = RestoredCollection.Room()
 	local isClear = room:IsClear()
 
 	if not wasClear and isClear then
@@ -132,7 +132,7 @@ local function TeleportMonsterAnim(_, npc)
 			if not data.WasHorseTelePilled then
 				local rng = Isaac.GetPlayer():GetCollectibleRNG(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PILL_CRUSHER)
 
-				local level = Game():GetLevel()
+				local level = RestoredCollection.Level
 				local currentRoomIndex = level:GetCurrentRoomDesc().SafeGridIndex
 				local possibleTeleRooms = {}
 
@@ -174,7 +174,7 @@ local function TeleportMonsterAnim(_, npc)
 		sprite.Scale = Vector(data.OriginalScale.X, data.OriginalScale.Y)
 	end
 
-    if not Game():IsPaused() then
+    if not RestoredCollection.Game:IsPaused() then
         sprite:Update()
     end
 end

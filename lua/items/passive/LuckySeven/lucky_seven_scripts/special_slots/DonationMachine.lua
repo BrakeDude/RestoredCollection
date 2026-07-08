@@ -1,7 +1,7 @@
 local LuckySevenSlot = include("lua.items.passive.LuckySeven.lucky_seven_scripts.LuckySevenSlot")
 local DonationMachine = LuckySevenSlot:New("gfx/lucky_seven_donation_machine.anm2", 180)
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 ---@param player EntityPlayer
 ---@return boolean
@@ -24,7 +24,7 @@ end
 
 ---@param slot Entity
 function SpawnGreedCoin(slot)
-    local room = Game():GetRoom()
+    local room = RestoredCollection.Room()
 
     ---@type Vector
     local spawningPos

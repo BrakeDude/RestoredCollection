@@ -176,7 +176,7 @@ function PumpkinMask:PostSeedRemove(tear)
 		tear = tear:ToTear()
 		splat.SpriteScale = Vector(tear.Scale, tear.Scale) / 2
 		splat:Update()
-		SFXManager():Play(SoundEffect.SOUND_TEARIMPACTS, 1, 0, false, 1)
+		RestoredCollection.SFX:Play(SoundEffect.SOUND_TEARIMPACTS, 1, 0, false, 1)
 	end
 end
 RestoredCollection:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, PumpkinMask.PostSeedRemove, EntityType.ENTITY_TEAR)

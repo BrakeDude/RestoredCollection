@@ -512,7 +512,7 @@ do
 				if HodlingTab() then
 					player = EID.holdTabPlayer
 				elseif descObj and descObj.Entity then
-					player = Game():GetNearestPlayer(descObj.Entity.Position)
+					player = RestoredCollection.Game:GetNearestPlayer(descObj.Entity.Position)
 				end
 				if player ~= nil and player:HasCollectible(CollectibleType.COLLECTIBLE_BFFS) then
 					descObj.Description = descObj.Description:gsub("%d+%.?%d*", double)
@@ -578,7 +578,7 @@ do
 				if HodlingTab() then
 					player = EID.holdTabPlayer
 				elseif descObj and descObj.Entity then
-					player = Game():GetNearestPlayer(descObj.Entity.Position)
+					player = RestoredCollection.Game:GetNearestPlayer(descObj.Entity.Position)
 				end
 
 				if player ~= nil then
@@ -647,7 +647,7 @@ do
 				if HodlingTab() then
 					player = EID.holdTabPlayer
 				elseif descObj and descObj.Entity then
-					player = Game():GetNearestPlayer(descObj.Entity.Position)
+					player = RestoredCollection.Game:GetNearestPlayer(descObj.Entity.Position)
 				end
 				if player ~= nil then
 					return Helpers.IsAnyPlayerType(player, PlayerType.PLAYER_KEEPER, PlayerType.PLAYER_KEEPER_B)
@@ -662,7 +662,7 @@ do
 				if HodlingTab() then
 					player = EID.holdTabPlayer
 				elseif descObj and descObj.Entity then
-					player = Game():GetNearestPlayer(descObj.Entity.Position)
+					player = RestoredCollection.Game:GetNearestPlayer(descObj.Entity.Position)
 				end
 				if player ~= nil then
 					local isKeeper, isTaintedKeeper, isTarnishedKeeper =

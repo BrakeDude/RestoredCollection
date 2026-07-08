@@ -65,7 +65,7 @@ local FriendlyDipPerEntityPoop = {
 
 PillCrusher:AddPillCrusherEffect(PillEffect.PILLEFFECT_RELAX, "Re-Lax",
 function (player, rng, _, isHorse)
-    local room = Game():GetRoom()
+    local room = RestoredCollection.Room()
 
     local roomSize = room:GetGridSize()
 

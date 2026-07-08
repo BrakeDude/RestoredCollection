@@ -1,7 +1,7 @@
 local LuckySevenSlot = include("lua.items.passive.LuckySeven.lucky_seven_scripts.LuckySevenSlot")
 local BloodDonationMachine = LuckySevenSlot:New("gfx/lucky_seven_blood_donation_machine.anm2", 180)
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 ---@param player EntityPlayer
 ---@return boolean

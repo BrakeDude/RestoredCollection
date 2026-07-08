@@ -8,12 +8,12 @@ local function OnUpdate()
     local excitedStacks = math.max(0, excitedCrushed - drowsyCrushed)
 
     if excitedStacks < lastExcitedStacks then
-        local room = Game():GetRoom()
+        local room = RestoredCollection.Room()
 
         lastBrokenWatchState = room:GetBrokenWatchState()
         room:SetBrokenWatchState(1)
     elseif excitedStacks > lastExcitedStacks then
-        local room = Game():GetRoom()
+        local room = RestoredCollection.Room()
 
         room:SetBrokenWatchState(lastBrokenWatchState)
     end

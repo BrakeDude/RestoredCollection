@@ -1,7 +1,7 @@
 local IllusionModLocal = {}
-local game = Game()
+local game = RestoredCollection.Game
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
+local sfx = RestoredCollection.SFX
 
 function IllusionModLocal:onUseBookOfIllusions(collectible, _, player, flags)
 	if REPENTOGON then

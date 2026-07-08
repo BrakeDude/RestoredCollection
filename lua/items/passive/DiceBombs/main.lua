@@ -84,14 +84,14 @@ function DiceBombsLocal:D6BombExplode(rng, position, player, radius)
 		if entity.Type == EntityType.ENTITY_PICKUP and entity.Variant == PickupVariant.PICKUP_COLLECTIBLE then
 			if not DiceBombItemBlacklist[entity.SubType] then
 				if rng:RandomInt(20) > 0 then
-					local itemPool = Game():GetItemPool()
-					local poolType = itemPool:GetPoolForRoom(Game():GetRoom():GetType(), entity.InitSeed)
+					local itemPool = RestoredCollection.Game:GetItemPool()
+					local poolType = itemPool:GetPoolForRoom(RestoredCollection.Room():GetType(), entity.InitSeed)
 					local col = itemPool:GetCollectible(poolType, true)
 					entity:ToPickup():Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, col, true)
 					Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, nil)
 				else
 					entity:Remove()
-					Game():SpawnParticles(
+					RestoredCollection.Game:SpawnParticles(
 						entity.Position,
 						EffectVariant.ROCK_PARTICLE,
 						rng:RandomInt(2) + 3,
@@ -100,8 +100,8 @@ function DiceBombsLocal:D6BombExplode(rng, position, player, radius)
 						_,
 						1
 					)
-					SFXManager():Play(SoundEffect.SOUND_MUSHROOM_POOF_2)
-					SFXManager():Play(SoundEffect.SOUND_ROCK_CRUMBLE)
+					RestoredCollection.SFX:Play(SoundEffect.SOUND_MUSHROOM_POOF_2)
+					RestoredCollection.SFX:Play(SoundEffect.SOUND_ROCK_CRUMBLE)
 				end
 			end
 		end
@@ -118,14 +118,14 @@ function DiceBombsLocal:ED6BombExplode(rng, position, player, radius)
 		if entity.Type == EntityType.ENTITY_PICKUP and entity.Variant == PickupVariant.PICKUP_COLLECTIBLE then
 			if not DiceBombItemBlacklist[entity.SubType] then
 				if rng:RandomInt(10) > 0 then
-					local itemPool = Game():GetItemPool()
-					local poolType = itemPool:GetPoolForRoom(Game():GetRoom():GetType(), entity.InitSeed)
+					local itemPool = RestoredCollection.Game:GetItemPool()
+					local poolType = itemPool:GetPoolForRoom(RestoredCollection.Room():GetType(), entity.InitSeed)
 					local col = itemPool:GetCollectible(poolType, true)
 					entity:ToPickup():Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, col, true)
 					Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, nil)
 				else
 					entity:Remove()
-					Game():SpawnParticles(
+					RestoredCollection.Game:SpawnParticles(
 						entity.Position,
 						EffectVariant.ROCK_PARTICLE,
 						rng:RandomInt(2) + 3,
@@ -134,8 +134,8 @@ function DiceBombsLocal:ED6BombExplode(rng, position, player, radius)
 						_,
 						1
 					)
-					SFXManager():Play(SoundEffect.SOUND_MUSHROOM_POOF_2)
-					SFXManager():Play(SoundEffect.SOUND_ROCK_CRUMBLE)
+					RestoredCollection.SFX:Play(SoundEffect.SOUND_MUSHROOM_POOF_2)
+					RestoredCollection.SFX:Play(SoundEffect.SOUND_ROCK_CRUMBLE)
 				end
 			end
 		end
@@ -251,7 +251,7 @@ function DiceBombsLocal:SpindownBombExplode(rng, position, player, radius)
 					end
 				else
 					entity:Remove()
-					Game():SpawnParticles(
+					RestoredCollection.Game:SpawnParticles(
 						entity.Position,
 						EffectVariant.ROCK_PARTICLE,
 						rng:RandomInt(2) + 3,
@@ -260,8 +260,8 @@ function DiceBombsLocal:SpindownBombExplode(rng, position, player, radius)
 						_,
 						1
 					)
-					SFXManager():Play(SoundEffect.SOUND_MUSHROOM_POOF_2)
-					SFXManager():Play(SoundEffect.SOUND_ROCK_CRUMBLE)
+					RestoredCollection.SFX:Play(SoundEffect.SOUND_MUSHROOM_POOF_2)
+					RestoredCollection.SFX:Play(SoundEffect.SOUND_ROCK_CRUMBLE)
 				end
 			end
 		end

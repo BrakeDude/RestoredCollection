@@ -140,8 +140,8 @@ else
                     ---@diagnostic disable-next-line: param-type-mismatch
                     Isaac.Explode(luckySevenSlot.Position + Vector(0, -5), Isaac.GetPlayer(0), 100)
 
-                    for i = 0, Game():GetNumPlayers() - 1, 1 do
-                        local player = Game():GetPlayer(i)
+                    for i = 0, RestoredCollection.Game:GetNumPlayers() - 1, 1 do
+                        local player = RestoredCollection.Game:GetPlayer(i)
 
                         local distance = player.Position:Distance(luckySevenSlot.Position)
 

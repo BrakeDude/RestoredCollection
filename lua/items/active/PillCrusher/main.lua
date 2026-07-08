@@ -1,7 +1,7 @@
 local PillCrusherLocal = {} --So all the callback functions are not in a global
 local Helpers = RestoredCollection.Helpers
-local sfx = SFXManager()
-local hud = Game():GetHUD()
+local sfx = RestoredCollection.SFX
+local hud = RestoredCollection.HUD
 
 local BloomAmount = 0
 local blurspeed = 0.07
@@ -78,7 +78,7 @@ local function Lerp(a, b, t)
 end
 
 local function IsPillInPool(effect)
-	local pool = Game():GetItemPool()
+	local pool = RestoredCollection.Game:GetItemPool()
 	if REPENTOGON then
 		return pool:GetPillColor(effect) ~= -1
 	end
@@ -108,7 +108,7 @@ local function ReplaceBlankEffect()
 		return -1
 	end
 	local rng = RNG()
-	rng:SetSeed(Game():GetSeeds():GetStartSeed(), 35)
+	rng:SetSeed(RestoredCollection.Game:GetSeeds():GetStartSeed(), 35)
 	
 	local effect = NeutralPills[1]
 	
@@ -163,7 +163,7 @@ function PillCrusherLocal:UsePillCrusher(_, rng, player)
 	if truePillColor == 0 then return {ShowAnim = false, Remove = false, Discharge = false} end
 
 	local pillColorToCheckEffect = truePillColor
-	local itemPool = Game():GetItemPool()
+	local itemPool = RestoredCollection.Game:GetItemPool()
 	local pillEffect = itemPool:GetPillEffect(pillColorToCheckEffect, player)
 	--Fiend folio compatibility bs (ffs why wouldn't they just make it an api)
 	if FiendFolio then
@@ -222,7 +222,7 @@ function PillCrusherLocal:UsePillCrusher(_, rng, player)
 
 	player:UsePill(blankEffect, PillColor.PILL_NULL, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER | UseFlag.USE_NOHUD)
     --[[if REPENTOGON then
-		Game():SetBloom(30, 1)
+		RestoredCollection.Game:SetBloom(30, 1)
 	end]]
 	
 	if showName then
@@ -238,7 +238,7 @@ function PillCrusherLocal:UsePillCrusher(_, rng, player)
 		player:SetPill(0, 0)
 
 		if player:HasTrinket(TrinketType.TRINKET_ENDLESS_NAMELESS) and rng:RandomInt(100) < 25 then
-			local spawningPos = Game():GetRoom():FindFreePickupSpawnPosition(player.Position, 1, true)
+			local spawningPos = RestoredCollection.Room():FindFreePickupSpawnPosition(player.Position, 1, true)
 			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_PILL, truePillColor, spawningPos, Vector.Zero, nil)
 		end
 	end
@@ -254,7 +254,7 @@ RestoredCollection:AddCallback(ModCallbacks.MC_USE_ITEM, PillCrusherLocal.UsePil
 if REPENTOGON then
 	function PillCrusherLocal:AddPill(collectible, charge, firstTime, slot, VarData, player)
 		if firstTime and collectible == RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PILL_CRUSHER then
-			local room = Game():GetRoom()
+			local room = RestoredCollection.Room()
 			local spawningPos = room:FindFreePickupSpawnPosition(player.Position, 1, true)
 			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_PILL, 0, spawningPos, Vector.Zero, player):ToPickup()
 		end
@@ -268,7 +268,7 @@ else
 		data.pilldrop = data.pilldrop or player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PILL_CRUSHER)
 
 		if data.pilldrop < player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PILL_CRUSHER) then
-			local room = Game():GetRoom()
+			local room = RestoredCollection.Room()
 			local spawningPos = room:FindFreePickupSpawnPosition(player.Position, 1, true)
 			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_PILL, 0, spawningPos, Vector.Zero, player):ToPickup()
 			data.pilldrop = player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PILL_CRUSHER)
@@ -285,7 +285,7 @@ end
 RestoredCollection:AddCallback(ModCallbacks.MC_GET_PILL_EFFECT, PillCrusherLocal.PreventBlankFromNormalPills)
 
 function PillCrusherLocal:spawnPill(rng, pos)
-	local room = Game():GetRoom()
+	local room = RestoredCollection.Room()
 	local spawnposition = room:FindFreePickupSpawnPosition(pos)
 	local spawned = false
 	for _,player in ipairs(Helpers.GetPlayers()) do
@@ -303,7 +303,7 @@ RestoredCollection:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, PillCrushe
 function PillCrusherLocal:item_effect()
 	for _,player in ipairs(Helpers.GetPlayers()) do
 		local rng = player:GetCollectibleRNG(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PILL_CRUSHER)
-		if player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PILL_CRUSHER) == true and Game():IsGreedMode() == true then
+		if player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PILL_CRUSHER) == true and RestoredCollection.Game:IsGreedMode() == true then
 			for _ = 1, 3 do
 				Isaac.Spawn(5, 70, 0, player.Position, Vector.FromAngle(TSIL.Random.GetRandomInt(0, 360, rng)):Resized(3), player)
 			end
