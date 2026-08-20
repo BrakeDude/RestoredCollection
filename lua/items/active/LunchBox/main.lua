@@ -80,11 +80,7 @@ local function AddPickupsToLunchBox()
 			"RestoredCollection",
 			CustomHealthAPI.Enums.Callbacks.CAN_PICK_HEALTH,
 			0,
-			function(playerType, player, key)
-				if CustomHealthAPI.Mod.Version < 0.965 then
-					key = player
-					player = playerType
-				end
+			function(player, key)
 				local typ = CustomHealthAPI.Library.GetInfoOfKey(key, "Type")
 				if typ == CustomHealthAPI.Enums.HealthTypes.RED then
 					if DoesLunchBoxNeedsCharge(player) then
