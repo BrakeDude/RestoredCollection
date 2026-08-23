@@ -1,4 +1,4 @@
-local localversion = 1.2
+local localversion = 1.3
 local game = Game()
 local hud = game:GetHUD()
 local sfx = SFXManager()
@@ -14,6 +14,7 @@ local function load(prevData)
 	IllusionMod.Loaded = false
 	IllusionMod.CanPlaceBomb = false
 	IllusionMod.PerfectIllusion = false
+	local illusionSubType = REPENTOGON and Isaac.GetEntitySubTypeByName("Illusion Heart") or 9000
 	local IllusionCallbacks = {}
 	local EntityData = {}
 
@@ -226,13 +227,12 @@ local function load(prevData)
 		illusionPlayer:AddEternalHearts(-illusionPlayer:GetEternalHearts())
 		illusionPlayer:AddHearts(-illusionPlayer:GetHearts())
 
-		if illusionPlayer:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
-			illusionPlayer:AddBoneHearts(1)
-		else
+		if CustomHealthAPI.Helper.PlayerHasCoinHealth(illusionPlayer) then
 			illusionPlayer:AddMaxHearts(2)
+			illusionPlayer:AddHearts(2)
+		else
+			CustomHealthAPI.Library.AddHealth(illusionPlayer, "HEART_ILLUSION", 2)
 		end
-
-		illusionPlayer:AddHearts(2)
 	end
 
 	---@param illusionPlayer EntityPlayer
@@ -469,6 +469,7 @@ local function load(prevData)
 			IllusionMod.UnloadCallbacks()
 		end
 	end
+
 	IllusionMod:AddCallback(ModCallbacks.MC_PRE_MOD_UNLOAD, IllusionMod.ModReset)
 
 	function IllusionMod:ModLoad()
@@ -478,6 +479,7 @@ local function load(prevData)
 			IllusionMod.LoadCallbacks()
 		end
 	end
+
 	IllusionMod:AddCallback(
 		REPENTOGON and ModCallbacks.MC_POST_MODS_LOADED or ModCallbacks.MC_POST_GAME_STARTED,
 		IllusionMod.ModLoad
@@ -506,10 +508,10 @@ local function load(prevData)
 
 	local function ModdedDeathCheck(p)
 		local offset = (
-			p:GetPlayerType() ~= PlayerType.PLAYER_THEFORGOTTEN
-			or p:GetPlayerType() ~= PlayerType.PLAYER_THEFORGOTTEN_B
-		)
-				and Vector(30 * p.SpriteScale.X, 0)
+				p:GetPlayerType() ~= PlayerType.PLAYER_THEFORGOTTEN
+				or p:GetPlayerType() ~= PlayerType.PLAYER_THEFORGOTTEN_B
+			)
+			and Vector(30 * p.SpriteScale.X, 0)
 			or Vector.Zero
 		if sussydeath then
 			offset = Vector.Zero
@@ -808,6 +810,56 @@ local function load(prevData)
 		IllusionMod.AddForbiddenChar(RedBaby.enums.PlayerType.RED_BABY_A, PlayerType.PLAYER_BLUEBABY)
 		IllusionMod.AddForbiddenItem(RedBaby.enums.CollectibleType.REDBABY_HEART)
 	end
+
+	if CustomHealthAPI and CustomHealthAPI.Library and CustomHealthAPI.Library.UnregisterCallbacks then
+		CustomHealthAPI.Library.UnregisterCallbacks("IllusionHeart")
+	end
+
+
+	CustomHealthAPI.Library.AddCallback("IllusionHeart", CustomHealthAPI.Enums.Callbacks.PRE_RENDER_HEART, 0,
+		function(player, index, hp, redHP, filename, animname, color, offset)
+			local data = IllusionMod.GetData(player)
+			if data.IsIllusion and not player:IsDead() and CustomHealthAPI.Helper.PlayerHasCoinHealth(player) then
+				return { AnimationName = "IllusionCoin", AnimationFilename = "gfx/ui/ui_hearts_illusion.anm2" }
+			end
+		end)
+
+	CustomHealthAPI.Library.RegisterSoulHealth(
+		"HEART_ILLUSION",
+		{
+			AnimationFilename = "gfx/ui/ui_hearts_illusion.anm2",
+			AnimationName = { "IllusionHeart" },
+			SortOrder = 100,
+			AddPriority = 125,
+			HealFlashRO = 240 / 255,
+			HealFlashGO = 240 / 255,
+			HealFlashBO = 240 / 255,
+			MaxHP = 2,
+			PrioritizeHealing = false,
+			CollectSound = { ID = Isaac.GetSoundIdByName("PickupIllusion"), Volume = 1.0, Pitch = 1.0 },
+			PickupEntities = {
+				{ ID = EntityType.ENTITY_PICKUP, Var = PickupVariant.PICKUP_HEART, Sub = illusionSubType }
+			},
+		}
+	)
+
+	CustomHealthAPI.Library.RegisterHeartPickup(PickupVariant.PICKUP_HEART,
+		illusionSubType, {
+		HealthKeys = { "HEART_ILLUSION" },
+		HealthAmount = 0,
+		DropSound = SoundEffect.SOUND_MEAT_FEET_SLOW0,
+		AllowCandyHeartSoulLocketBonus = false,
+		AllowImmaculateConception = false,
+		ManualAddHealth = true,
+		AllowMagneto = true,
+		CanCollect = function(player, pickup)
+			return not player.Parent and not IllusionMod.GetData(player).IsIllusion
+		end,
+		OnCollect = function(player, pickup)
+			CustomHealthAPI.Library.PlayHealthCollectSound("HEART_ILLUSION")
+			IllusionMod:addIllusion(player, true)
+		end
+	})
 end
 
 if IllusionMod then
@@ -817,11 +869,11 @@ if IllusionMod then
 		else
 			Log(
 				"["
-					.. IllusionMod.Name
-					.. "] Found old script V"
-					.. IllusionMod.Version
-					.. ". Replacing with V"
-					.. localversion
+				.. IllusionMod.Name
+				.. "] Found old script V"
+				.. IllusionMod.Version
+				.. ". Replacing with V"
+				.. localversion
 			)
 		end
 		local data = IllusionMod.GetTablesData()

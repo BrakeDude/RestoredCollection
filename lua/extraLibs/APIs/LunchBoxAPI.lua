@@ -1,4 +1,4 @@
-local localversion = 1.0
+local localversion = 1.1
 local name = "Lunchbox API"
 
 local function Log(str)
@@ -16,23 +16,19 @@ local function load(data)
 		LunchBoxPickupData = data
 	end
 
-	function LunchBox.AddPickup(variant, subtype, charge, func)
+	function LunchBox.AddPickup(variant, subtype, pickupDef)
 		if
 			type(variant) ~= "number"
 			or type(subtype) ~= "number"
-			or type(charge) ~= "number"
-			or type(func) ~= "function"
+			or type(pickupDef) ~= "table"
 		then
 			Log(
 				"Couldn't add pickup to charge Lunchbox. Variant: "
 					.. tostring(variant)
 					.. ", SubType: "
 					.. tostring(subtype)
-					.. ", Charge: "
-					.. tostring(charge)
 					.. "."
 			)
-			Log("Function type is " .. type(func))
 			return
 		end
 		if not LunchBoxPickupData[variant] then
@@ -46,13 +42,13 @@ local function load(data)
 			end
 			return
 		end
-		LunchBoxPickupData[variant][subtype] = { Charge = charge, Function = func }
+		LunchBoxPickupData[variant][subtype] = pickupDef
 	end
 
 	function LunchBox.GetPickupData(variant, subtype)
 		if variant then
 			if subtype then
-				return LunchBoxPickupData[variant][subtype]
+				return LunchBox.GetPickupData(variant) ~= nil and LunchBoxPickupData[variant][subtype] or nil
 			end
 			return LunchBoxPickupData[variant]
 		end

@@ -15,6 +15,10 @@ include("lua.helpers.Helpers")
 RestoredCollection.SaveManager = include("lua.core.save_manager")
 RestoredCollection.SaveManager.Init(RestoredCollection)
 RestoredCollection.Bombs = {}
+include("lua.extraLibs.APIs.customhealthapi.core")
+RestoredCollection.SaveManager.InitCHAPI(CustomHealthAPI)
+
+
 include("lua.core.saving_system")
 
 --apis

@@ -39,6 +39,14 @@ local vectorDirection = {
 	[Direction.RIGHT] = Vector(1, 0),
 }
 
+function Helpers.DeepCopy(tab)
+	local newTab = {}
+	for k, v in pairs(tab) do
+		newTab[k] = type(v) == "table" and Helpers.DeepCopy(v) or v
+	end
+	return newTab
+end
+
 local function RemoveStoreCreditFromPlayer(player) -- Partially from FF
 	local t0 = player:GetTrinket(0)
 	local t1 = player:GetTrinket(1)
@@ -131,9 +139,11 @@ function Helpers.CollectCustomPickup(player, pickup)
 	if not Helpers.CanCollectCustomShopPickup(player, pickup) then
 		return pickup:IsShopItem()
 	end
+	local collected = false
 	if not pickup:IsShopItem() then
 		pickup:GetSprite():Play("Collect")
 		pickup:Die()
+		collected = true
 	else
 		if pickup.Price >= 0 or pickup.Price == PickupPrice.PRICE_FREE or pickup.Price == PickupPrice.PRICE_SPIKES then
 			if pickup.Price == PickupPrice.PRICE_SPIKES and not Helpers.IsGhost(player) then
@@ -145,13 +155,16 @@ function Helpers.CollectCustomPickup(player, pickup)
 			if pickup.Price >= 0 then
 				player:AddCoins(-pickup.Price)
 			end
-			CustomHealthAPI.Library.TriggerRestock(pickup)
+			if CustomHealthAPI then
+				CustomHealthAPI.Library.TriggerRestock(pickup)
+			end
 			TryRemoveStoreCredit(player)
 			pickup:Remove()
 			player:AnimatePickup(pickup:GetSprite(), true)
+			collected = true
 		end
 	end
-	if pickup.OptionsPickupIndex ~= 0 then
+	if pickup.OptionsPickupIndex ~= 0 and collected then
 		local pickups = Isaac.FindByType(EntityType.ENTITY_PICKUP)
 		for _, entity in ipairs(pickups) do
 			if
