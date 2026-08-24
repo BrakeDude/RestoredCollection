@@ -1,12 +1,15 @@
 local modname = "Restored Collection"
 
 DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.4",[[{{FSIZE2}}added
-- api exposure for bombs - spawn and
-add flag commands for every mod's bomb
+- custom health api
+
+{{FSIZE2}}changes
+- recoded lunch box to get advantages
+of lastest chapi features
 
 {{FSIZE2}}fixes
-- fixed keeper's rope spawning when
-disabled
+- fixed illusions not working with
+keepers
 ]],
 {"restored", "collection", "", "v1.31.4", "update"}, false, false)
 
