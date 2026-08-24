@@ -1,5 +1,15 @@
 local modname = "Restored Collection"
 
+DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.4",[[{{FSIZE2}}added
+- api exposure for bombs - spawn and
+add flag commands for every mod's bomb
+
+{{FSIZE2}}fixes
+- fixed keeper's rope spawning when
+disabled
+]],
+{"restored", "collection", "", "v1.31.4", "update"}, false, false)
+
 DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.3",[[{{FSIZE2}}added
 - api exposure for bombs - spawn and
 add flag commands for every mod's bomb
