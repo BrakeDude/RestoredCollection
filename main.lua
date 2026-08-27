@@ -8,7 +8,7 @@ if not REPENTOGON then
     RestoredCollection.HiddenItemManager = HiddenItemManager:Init(RestoredCollection)
 end
 
-
+include("lua.helpers.getdatacache")
 include("lua.helpers.Helpers")
 --include("lua.extraLibs.hellfirejuneMSHack")
 
