@@ -27,6 +27,35 @@ local function ShootPumkinSeed(position, shootDir, damage, parent)
 	sprite:Play(sprite:GetDefaultAnimation(), true)
 end
 
+local function FamiliarShootSeeds(familiarVariant, player, shootVec, damage, modifier, canShoot)
+	if not canShoot then
+		return
+	end
+	local familiars = TSIL.Utils.Tables.Filter(
+		Isaac.FindByType(EntityType.ENTITY_FAMILIAR, familiarVariant, -1, true, false),
+		function(_, ent)
+			ent = ent:ToFamiliar()
+			return ent.Player and GetPtrHash(ent.Player) == GetPtrHash(player)
+		end
+	)
+	if #familiars == 0 then
+		return
+	end
+	for i = 0, TSIL.Random.GetRandomInt(3 + modifier, 5 + modifier) do
+		TSIL.Utils.Tables.ForEach(familiars, function(_, familiar)
+			local twistedPair = familiar:ToFamiliar()
+			Helpers.scheduleForUpdate(function()
+				ShootPumkinSeed(
+					twistedPair.Position,
+					shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
+					damage,
+					player
+				)
+			end, 2 * i)
+		end)
+	end
+end
+
 ---@param player EntityPlayer
 function PumpkinMask:FireSeeds(player)
 	local numPumpkins = player:GetCollectibleNum(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_PUMPKIN_MASK)
@@ -43,36 +72,8 @@ function PumpkinMask:FireSeeds(player)
 					shootVec = player:GetAimDirection()
 				end
 				shootVec = shootVec:Resized(9) + player:GetTearMovementInheritance(shootVec)
-				--[[if shootVec:Length() < 9 then
-                    shootVec:Resize(9)
-                end]]
 				local numPumpkinNumModifier = 2 * (numPumpkins - 1)
-
-				local incubuses = TSIL.Utils.Tables.Filter(
-					Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.INCUBUS, -1, true, false),
-					function(_, ent)
-						ent = ent:ToFamiliar()
-						return ent.Player and GetPtrHash(ent.Player) == GetPtrHash(player)
-					end
-				)
-
-				local gellos = TSIL.Utils.Tables.Filter(
-					Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.UMBILICAL_BABY, -1, true, false),
-					function(_, ent)
-						ent = ent:ToFamiliar()
-						return ent.Player and GetPtrHash(ent.Player) == GetPtrHash(player)
-					end
-				)
-
-				local twistedPairs = TSIL.Utils.Tables.Filter(
-					Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.TWISTED_BABY, -1, true, false),
-					function(_, ent)
-						ent = ent:ToFamiliar()
-						return ent.Player and GetPtrHash(ent.Player) == GetPtrHash(player)
-					end
-				)
-
-				local incubusDamage = player.Damage * 0.4
+				local damage = player.Damage * 0.4
 				local mult = 1
 				if not Helpers.IsAnyPlayerType(player, PlayerType.PLAYER_LILITH, PlayerType.PLAYER_LILITH_B) then
 					mult = 0.75
@@ -83,64 +84,23 @@ function PumpkinMask:FireSeeds(player)
 				end
 
 				mult = mult + 0.25 * player:GetTrinketMultiplier(TrinketType.TRINKET_CHILD_LEASH)
-
-				for i = 0, TSIL.Random.GetRandomInt(3 + numPumpkinNumModifier, 5 + numPumpkinNumModifier) do
-					Helpers.scheduleForUpdate(function()
-						if player:CanShoot() then
-							ShootPumkinSeed(
-								player.Position + player.TearsOffset,
-								shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
-								player.Damage * 0.4,
-								player
-							)
-						end
-					end, 2 * i)
+				if player:CanShoot() then
+					for i = 0, TSIL.Random.GetRandomInt(3 + numPumpkinNumModifier, 5 + numPumpkinNumModifier) do
+						Helpers.scheduleForUpdate(function()
+							if not player:IsDead() then
+								ShootPumkinSeed(
+									player.Position + player.TearsOffset,
+									shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
+									player.Damage * 0.4,
+									player
+								)
+							end
+						end, 2 * i)
+					end
 				end
-                for i = 0, TSIL.Random.GetRandomInt(3 + numPumpkinNumModifier, 5 + numPumpkinNumModifier) do
-                    TSIL.Utils.Tables.ForEach(incubuses, function(_, incubusEnt)
-                        local incubus = incubusEnt:ToFamiliar()
-
-                        Helpers.scheduleForUpdate(function()
-                            ShootPumkinSeed(
-                                incubus.Position,
-                                shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
-                                incubusDamage * mult,
-                                player
-                            )
-                        end, 2 * i)
-                    end)
-                end
-                for i = 0, TSIL.Random.GetRandomInt(3 + numPumpkinNumModifier, 5 + numPumpkinNumModifier) do
-                    TSIL.Utils.Tables.ForEach(gellos, function(_, gelloEnt)
-                        local gello = gelloEnt:ToFamiliar()
-                        local shootVecGello = shootVec
-                        if gello.Target then
-                            shootVecGello = (gello.Target.Position - gello.Position):Resized(9)
-                            shootVecGello = shootVecGello + player:GetTearMovementInheritance(shootVecGello)
-                        end
-                        Helpers.scheduleForUpdate(function()
-                            ShootPumkinSeed(
-                                gello.Position,
-                                shootVecGello:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
-                                incubusDamage * mult,
-                                player
-                            )
-                        end, 2 * i)
-                    end)
-                end
-                for i = 0, TSIL.Random.GetRandomInt(3 + numPumpkinNumModifier, 5 + numPumpkinNumModifier) do
-                    TSIL.Utils.Tables.ForEach(twistedPairs, function(_, twistedPairEnt)
-                        local twistedPair = twistedPairEnt:ToFamiliar()
-                        Helpers.scheduleForUpdate(function()
-                            ShootPumkinSeed(
-                                twistedPair.Position,
-                                shootVec:Rotated(TSIL.Random.GetRandomInt(-15, 15)) * player.ShotSpeed,
-                                incubusDamage * mult / 2,
-                                player
-                            )
-                        end, 2 * i)
-                    end)
-                end
+				FamiliarShootSeeds(FamiliarVariant.INCUBUS, player, shootVec, damage * mult, numPumpkinNumModifier, true)
+				FamiliarShootSeeds(FamiliarVariant.UMBILICAL_BABY, player, shootVec, damage * mult, numPumpkinNumModifier, true)
+				FamiliarShootSeeds(FamiliarVariant.TWISTED_BABY, player, shootVec, damage * mult / 2, numPumpkinNumModifier, true)
 				data.FireDelaySeeds = Helpers.ToMaxFireDelay(2 / (2 + numPumpkins))
 			end
 		end

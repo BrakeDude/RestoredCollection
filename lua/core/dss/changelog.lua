@@ -6,6 +6,8 @@ DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.4",[[{{FSIZE2}}added
 {{FSIZE2}}changes
 - recoded lunch box to get advantages
 of lastest chapi features
+- pumpkin mask code optimization for 
+possible performance improvement
 
 {{FSIZE2}}fixes
 - fixed illusions not working with
