@@ -90,7 +90,6 @@ GetDataCache.Callbacks = {
 
 function GetDataCache:RegisterCallbacks()
 	for _, callback in pairs(self.Callbacks) do
-		print(callback.ID, callback.REPENTOGON)
 		if callback.REPENTOGON == nil or REPENTOGON and callback.REPENTOGON then
 			self:AddPriorityCallback(callback.ID, callback.Priority, callback.Function)
 		end
