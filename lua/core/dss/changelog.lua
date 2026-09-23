@@ -1,5 +1,21 @@
 local modname = "Restored Collection"
 
+DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.5",[[{{FSIZE2}}fixes
+- fixed compatibility with community
+remix mod
+- fixed ol' lopper head working only
+for one player (repentogon only)
+
+{{FSIZE2}}known bugs
+- illusions getting extra item from
+hidden item manager wisps
+- vanilla game crashes if illusion with
+ol' lopper dies. can probably happen
+with mods that also use hidden item
+manager to add items
+]],
+{"restored", "collection", "", "v1.31.5", "update"}, false, false)
+
 DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.4",[[{{FSIZE2}}added
 - custom health api
 

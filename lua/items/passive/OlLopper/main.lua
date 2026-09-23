@@ -360,10 +360,11 @@ if REPENTOGON then
     ---@param renderPos Vector
     function OlLopper:PrePlayerRenderHead(player, renderPos)
         if not player:IsHeadless() and RestoredCollection.Room():GetRenderMode() ~= RenderMode.RENDER_WATER_REFLECT then
-            local headHelper = Isaac.FindByType(EntityType.ENTITY_FAMILIAR, OlLopper.HEAD_HELPER.Variant)[1]
-            if headHelper and GetPtrHash(headHelper:ToFamiliar().Player) == GetPtrHash(player) then
-                local pos = headHelper.Position + (player.CanFly and OlLopper.HEAD_FLYING_OFFSET or Vector.Zero) + player.PositionOffset
-                return Isaac.WorldToScreen(pos)
+            for _,headHelper in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, OlLopper.HEAD_HELPER.Variant)) do
+                if headHelper and GetPtrHash(headHelper:ToFamiliar().Player) == GetPtrHash(player) then
+                    local pos = headHelper.Position + (player.CanFly and OlLopper.HEAD_FLYING_OFFSET or Vector.Zero) + player.PositionOffset
+                    return Isaac.WorldToScreen(pos)
+                end
             end
         end
     end
