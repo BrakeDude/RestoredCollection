@@ -1,4 +1,4 @@
-local localversion = 1.3
+local localversion = 1.4
 local game = Game()
 local hud = game:GetHUD()
 local sfx = SFXManager()
@@ -115,14 +115,14 @@ local function load(prevData)
 					if not BlackList(id) and not CanBeRevived(playerType, id) then
 						local itemCollectible = Isaac.GetItemConfig():GetCollectible(id)
 						if
-							not illusionPlayer:HasCollectible(id)
-							and player:HasCollectible(id)
+							not illusionPlayer:HasCollectible(id, true)
+							and player:HasCollectible(id, true)
 							and itemCollectible.Tags & ItemConfig.TAG_QUEST ~= ItemConfig.TAG_QUEST
 							and not itemCollectible:HasCustomTag("revive")
 							and not itemCollectible:HasCustomTag("reviveeffect")
 						then
 							if itemCollectible.Type ~= ItemType.ITEM_ACTIVE then
-								for _ = 1, player:GetCollectibleNum(id) do
+								for _ = 1, player:GetCollectibleNum(id, true) do
 									illusionPlayer:AddCollectible(id, 0, false)
 								end
 							end
@@ -137,12 +137,12 @@ local function load(prevData)
 					local itemCollectible = itemConfig:GetCollectible(i)
 					if itemCollectible then
 						if
-							not illusionPlayer:HasCollectible(i)
-							and player:HasCollectible(i)
+							not illusionPlayer:HasCollectible(i, true)
+							and player:HasCollectible(i, true)
 							and itemCollectible.Tags & ItemConfig.TAG_QUEST ~= ItemConfig.TAG_QUEST
 						then
 							if itemCollectible.Type ~= ItemType.ITEM_ACTIVE then
-								for _ = 1, player:GetCollectibleNum(i) do
+								for _ = 1, player:GetCollectibleNum(i, true) do
 									illusionPlayer:AddCollectible(i, 0, false)
 								end
 							end
@@ -192,7 +192,7 @@ local function load(prevData)
 					local itemConfig = Isaac.GetItemConfig()
 					local itemTrinket = itemConfig:GetTrinket(i)
 					if itemTrinket then
-						if not illusionPlayer:HasTrinket(i) and player:HasTrinket(i) then
+						if not illusionPlayer:HasTrinket(i, true) and player:HasTrinket(i, true) then
 							for _ = 1, player:GetTrinketMultiplier(i) do
 								illusionPlayer:AddTrinket(i, false)
 								illusionPlayer:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false)
@@ -204,6 +204,8 @@ local function load(prevData)
 		end
 	end
 
+	---@param player EntityPlayer
+	---@param illusionPlayer EntityPlayer
 	local function AddTransformationsToIllusion(player, illusionPlayer)
 		for transformation, transformationItem in pairs(TransformationItems) do
 			if player:HasPlayerForm(transformation) and not illusionPlayer:HasPlayerForm(transformation) then
