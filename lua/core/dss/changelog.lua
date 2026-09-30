@@ -1,5 +1,11 @@
 local modname = "Restored Collection"
 
+DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.6",[[{{FSIZE2}}fixes
+- fixed crashes with caused by
+illusion clones
+]],
+{"restored", "collection", "", "v1.31.6", "update"}, false, false)
+
 DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.5",[[{{FSIZE2}}fixes
 - fixed compatibility with community
 remix mod
