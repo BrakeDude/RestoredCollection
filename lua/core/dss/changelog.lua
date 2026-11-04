@@ -1,5 +1,12 @@
 local modname = "Restored Collection"
 
+DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.7",[[{{FSIZE2}}fixes
+- fixed not being able to collect
+illusion hearts from restored
+hearts mod
+]],
+{"restored", "collection", "", "v1.31.7", "update"}, false, false)
+
 DeadSeaScrollsMenu.AddChangelog(modname, "v1.31.6",[[{{FSIZE2}}fixes
 - fixed crashes with caused by
 illusion clones

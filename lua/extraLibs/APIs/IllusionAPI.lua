@@ -1,4 +1,4 @@
-local localversion = 1.4
+local localversion = 1.5
 local game = Game()
 local hud = game:GetHUD()
 local sfx = SFXManager()
@@ -14,7 +14,6 @@ local function load(prevData)
 	IllusionMod.Loaded = false
 	IllusionMod.CanPlaceBomb = false
 	IllusionMod.PerfectIllusion = false
-	local illusionSubType = REPENTOGON and Isaac.GetEntitySubTypeByName("Illusion Heart") or 9000
 	local IllusionCallbacks = {}
 	local EntityData = {}
 
@@ -838,30 +837,8 @@ local function load(prevData)
 			HealFlashBO = 240 / 255,
 			MaxHP = 2,
 			PrioritizeHealing = false,
-			CollectSound = { ID = Isaac.GetSoundIdByName("PickupIllusion"), Volume = 1.0, Pitch = 1.0 },
-			PickupEntities = {
-				{ ID = EntityType.ENTITY_PICKUP, Var = PickupVariant.PICKUP_HEART, Sub = illusionSubType }
-			},
 		}
 	)
-
-	CustomHealthAPI.Library.RegisterHeartPickup(PickupVariant.PICKUP_HEART,
-		illusionSubType, {
-		HealthKeys = { "HEART_ILLUSION" },
-		HealthAmount = 0,
-		DropSound = SoundEffect.SOUND_MEAT_FEET_SLOW0,
-		AllowCandyHeartSoulLocketBonus = false,
-		AllowImmaculateConception = false,
-		ManualAddHealth = true,
-		AllowMagneto = true,
-		CanCollect = function(player, pickup)
-			return not player.Parent and not IllusionMod.GetData(player).IsIllusion
-		end,
-		OnCollect = function(player, pickup)
-			CustomHealthAPI.Library.PlayHealthCollectSound("HEART_ILLUSION")
-			IllusionMod:addIllusion(player, true)
-		end
-	})
 end
 
 if IllusionMod then
