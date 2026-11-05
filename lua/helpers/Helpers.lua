@@ -515,6 +515,62 @@ function Helpers.GetLuckySevenTearChance(player)
 	return chance * mult
 end
 
+---@param player EntityPlayer
+---@return number
+function Helpers.GetLuckySevenDamageMult(player)
+	local mult = 1.25
+	for _, v in ipairs({ player:GetNumCoins(), player:GetNumKeys(), player:GetNumBombs(), player:GetPoopMana() }) do
+		if v % 10 == 7 then
+			mult = mult + 0.25
+		end
+	end
+	return mult
+end
+
+---@param player EntityPlayer
+---@return integer
+function Helpers.GetLuckySevenMaxChance(player)
+	local tab = { player:GetNumCoins(), player:GetNumBombs(), player:GetPoopMana(), player:GetNumKeys() }
+	for i, v in ripairs(tab) do
+		if v == 0 then
+			table.remove(tab, i)
+		end
+	end
+	local n = #tab
+	local usedIndexes, results = {}, {}
+	for mask = 1, (1 << n) - 1 do
+		local s = 0
+		local seenIndex = {}
+		local skip = false
+		for i = 1, n do
+			if mask & (1 << (i - 1)) ~= 0 and not usedIndexes[i] then
+				s = s + tab[i]
+				seenIndex[#seenIndex + 1] = i
+			end
+		end
+		if s % 10 == 7 and not skip then
+			results[#results + 1] = { sum = s, size = #seenIndex }
+			for i, index in ipairs(seenIndex) do
+				usedIndexes[index] = true
+			end
+		end
+	end
+	table.sort(results, function(a, b)
+		return a.size < b.size
+	end)
+	local chance = 0
+	for _, result in ipairs(results) do
+		local addChance
+		if chance == 0 then
+			addChance = result.sum / result.size
+		else
+			addChance = (10 + 5 * (result.size - 1)) / result.size
+		end
+		chance = chance + addChance
+	end
+	return chance
+end
+
 ---@param enemy Entity
 ---@param player EntityPlayer
 ---@param rng RNG
@@ -884,8 +940,9 @@ end
 function Helpers.DoesAnyPlayerHasTrinket(trinket)
 	return REPENTOGON and PlayerManager.AnyoneHasTrinket(trinket)
 		or #Helpers.Filter(Helpers.GetPlayers(), function(_, player)
-			return player:HasTrinket(trinket)
-		end) > 0
+				return player:HasTrinket(trinket)
+			end)
+			> 0
 end
 
 ---@param bomb EntityBomb
@@ -910,9 +967,7 @@ end
 ---@param customFlags table?
 ---@return EntityBomb
 function Helpers.SpawnBomb(position, variant, spawner, flags, customFlags)
-	local bomb =
-		Isaac.Spawn(EntityType.ENTITY_BOMB, variant, 0, position, Vector.Zero, spawner)
-			:ToBomb()
+	local bomb = Isaac.Spawn(EntityType.ENTITY_BOMB, variant, 0, position, Vector.Zero, spawner):ToBomb()
 	bomb:AddTearFlags(flags)
 	if customFlags and type(customFlags) == "table" then
 		for flag, flagFunc in pairs(customFlags) do
