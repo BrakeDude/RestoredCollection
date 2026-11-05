@@ -518,6 +518,9 @@ end
 ---@param player EntityPlayer
 ---@return number
 function Helpers.GetLuckySevenDamageMult(player)
+	if not player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN) then
+		return 1
+	end
 	local mult = 1.25
 	for _, v in ipairs({ player:GetNumCoins(), player:GetNumKeys(), player:GetNumBombs(), player:GetPoopMana() }) do
 		if v % 10 == 7 then
@@ -528,8 +531,12 @@ function Helpers.GetLuckySevenDamageMult(player)
 end
 
 ---@param player EntityPlayer
+---@param includeTearDrop boolean?
 ---@return integer
-function Helpers.GetLuckySevenMaxChance(player)
+function Helpers.GetLuckySevenChance(player, includeTearDrop)
+	if not player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN) then
+		return -1
+	end
 	local tab = { player:GetNumCoins(), player:GetNumBombs(), player:GetPoopMana(), player:GetNumKeys() }
 	for i, v in ripairs(tab) do
 		if v == 0 then
@@ -549,26 +556,26 @@ function Helpers.GetLuckySevenMaxChance(player)
 			end
 		end
 		if s % 10 == 7 and not skip then
-			results[#results + 1] = { sum = s, size = #seenIndex }
+			results[#results + 1] = #seenIndex
 			for i, index in ipairs(seenIndex) do
 				usedIndexes[index] = true
 			end
 		end
 	end
 	table.sort(results, function(a, b)
-		return a.size < b.size
+		return a < b
 	end)
 	local chance = 0
 	for _, result in ipairs(results) do
 		local addChance
 		if chance == 0 then
-			addChance = result.sum / result.size
+			addChance = math.ceil(50 / result)
 		else
-			addChance = (10 + 5 * (result.size - 1)) / result.size
+			addChance = math.ceil((10 + 5 * (result - 1)) / result)
 		end
 		chance = chance + addChance
 	end
-	return chance
+	return chance + math.max(0, Helpers.GetLuck(player, includeTearDrop))
 end
 
 ---@param enemy Entity
@@ -648,6 +655,7 @@ function Helpers.DoesLaserHitEntity(laser, entity)
 	---@type VectorList
 	---@diagnostic disable-next-line: assign-type-mismatch
 	local samplePoints = laser:GetSamples()
+	print(samplePoints, samplePoints.Size)
 	local laserSize = laser.Size
 
 	--From https://math.stackexchange.com/questions/190111/how-to-check-if-a-point-is-inside-a-rectangle

@@ -11,23 +11,19 @@ function LuckySevenLasers:OnLaserInit(laser)
     local player = laser.SpawnerEntity:ToPlayer()
 
     if not player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN) then return end
-    if not Helpers.DoesPlayerHaveRightAmountOfPickups(player) then return end
 
     local laserData = Helpers.GetData(laser)
 
     local rng = RNG()
     rng:SetSeed(laser.InitSeed, 35)
 
-    local mult = player:HasTrinket(TrinketType.TRINKET_TEARDROP_CHARM) and 3 or 1
+    local chance = Helpers.GetLuckySevenChance(player)
 
-    local chance = math.max(0, math.min(15, 5 + player.Luck))
-
-    if rng:RandomInt(100) <= chance * mult then
+    if rng:RandomInt(100) <= chance then
         laserData.IsLuckySevenLaser = true
     end
 end
 RestoredCollection:AddCallback(ModCallbacks.MC_POST_LASER_INIT, LuckySevenLasers.OnLaserInit)
-
 
 ---@param laser EntityLaser
 function LuckySevenLasers:OnLaserRender(laser)
@@ -49,17 +45,17 @@ RestoredCollection:AddCallback(ModCallbacks.MC_POST_LASER_RENDER, LuckySevenLase
 ---@param entity Entity
 ---@param flags DamageFlag
 ---@param source EntityRef
-function LuckySevenLasers:OnEntityDamage(entity, _, flags, source)
-    if not Helpers.IsTargetableEnemy(entity) then return end
+function LuckySevenLasers:OnEntityDamage(entity, damage, flags, source)
+    if not Helpers.IsTargetableEnemy(entity) or entity.HitPoints > damage then return end
     if source.Type ~= EntityType.ENTITY_PLAYER then return end
     local player = source.Entity:ToPlayer()
     if not player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN) or
     player:HasCollectible(CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE) then return end
     if flags & DamageFlag.DAMAGE_LASER == 0 then return end
 
-    local entityRNG = RNG()
-    entityRNG:SetSeed(entity.InitSeed, 35)
-    if entityRNG:RandomInt(100) < 50 then return end
+    --local entityRNG = RNG()
+    --entityRNG:SetSeed(entity.InitSeed, 35)
+    --if entityRNG:RandomInt(100) < 50 then return end
 
     for _, laser in ipairs(Isaac.FindByType(EntityType.ENTITY_LASER)) do
         laser = laser:ToLaser()

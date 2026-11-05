@@ -29,7 +29,7 @@ local function CheckForLudoTear(entity, tear)
 
     local rng = tear:GetDropRNG()
 
-    local chance = Helpers.GetLuckySevenTearChance(player) * 5
+    local chance = Helpers.GetLuckySevenChance(player) * 5
 
     if rng:RandomInt(1000) < chance then
         Helpers.TurnEnemyIntoGoldenMachine(entity, player, rng)
@@ -63,7 +63,7 @@ local function CheckForLudoLaser(entity, player)
 
     local rng = hitLaser:GetDropRNG()
 
-    local chance = Helpers.GetLuckySevenTearChance(player) * 5
+    local chance = Helpers.GetLuckySevenChance(player) * 5
 
     if rng:RandomInt(1000) < chance then
         Helpers.TurnEnemyIntoGoldenMachine(entity, player, rng)
@@ -74,9 +74,8 @@ end
 ---@param entity Entity
 ---@param flags DamageFlag
 ---@param source EntityRef
-function LuckySevenLudovico:OnEntityDamage(entity, _, flags, source)
-    if not Helpers.IsTargetableEnemy(entity) then return end
-
+function LuckySevenLudovico:OnEntityDamage(entity, damage, flags, source)
+    if not Helpers.IsTargetableEnemy(entity) or damage > entity.HitPoints then return end
     if source.Type == EntityType.ENTITY_TEAR then
         local tear = source.Entity:ToTear()
         CheckForLudoTear(entity, tear)

@@ -32,12 +32,12 @@ function LuckySevenBoneSwing:OnKnifeRender(knife)
 
     if animationOnLastFrame ~= nil and animation ~= animationOnLastFrame and
     (animation == "Swing" or animation == "Swing2") then
-        local chance = Helpers.GetLuckySevenTearChance(player)
+        local chance = Helpers.GetLuckySevenChance(player)
         local rng = knife:GetDropRNG()
 
         if rng:RandomInt(100) < chance then
             local speed = DIRECTION_TO_VECTOR[player:GetFireDirection()] * 9
-            local tear = player:FireTear(knife.Position, speed, false, true, false, player, 1)
+            local tear = player:FireTear(knife.Position, speed, false, true, false, player, Helpers.GetLuckySevenDamageMult(player))
 
             tear:ChangeVariant(TearVariant.BLUE)
 
