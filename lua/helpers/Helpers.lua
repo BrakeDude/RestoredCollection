@@ -548,14 +548,13 @@ function Helpers.GetLuckySevenChance(player, includeTearDrop)
 	for mask = 1, (1 << n) - 1 do
 		local s = 0
 		local seenIndex = {}
-		local skip = false
 		for i = 1, n do
 			if mask & (1 << (i - 1)) ~= 0 and not usedIndexes[i] then
 				s = s + tab[i]
 				seenIndex[#seenIndex + 1] = i
 			end
 		end
-		if s % 10 == 7 and not skip then
+		if s % 10 == 7 then
 			results[#results + 1] = #seenIndex
 			for i, index in ipairs(seenIndex) do
 				usedIndexes[index] = true
