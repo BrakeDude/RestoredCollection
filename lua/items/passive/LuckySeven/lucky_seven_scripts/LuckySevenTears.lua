@@ -4,9 +4,9 @@ local Helpers = RestoredCollection.Helpers
 
 ---@param tear EntityTear
 function LuckySevenTears:OnTearInit(tear)
-    if tear.SpawnerType ~= EntityType.ENTITY_PLAYER and not tear.Parent then return end
+    if tear.SpawnerType ~= EntityType.ENTITY_PLAYER and not (tear.Parent or tear.SpawnerEntity) then return end
 
-    local player = tear.Parent:ToPlayer()
+    local player = Helpers.GetPlayerFromTear(tear)
 
     if not player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN) then return end
 
@@ -29,7 +29,6 @@ function LuckySevenTears:OnTearInit(tear)
         tear.CollisionDamage = tear.CollisionDamage * Helpers.GetLuckySevenDamageMult(player)
     end
 end
-
 RestoredCollection:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, LuckySevenTears.OnTearInit)
 
 ---@param tear EntityTear
@@ -48,6 +47,10 @@ RestoredCollection:AddCallback(ModCallbacks.MC_POST_TEAR_RENDER, LuckySevenTears
 ---@param effect EntityEffect
 function LuckySevenTears:LuckyTearSparkle(effect)
     if not effect.Parent or not effect.Parent:ToTear() or effect.Parent:IsDead() then
+        effect:Remove()
+    end
+    local data = Helpers.GetData(effect.Parent)
+    if data.IsLuckySevenTear ~= true then
         effect:Remove()
     end
     effect.m_Height = effect.Parent:ToTear().Height

@@ -716,25 +716,32 @@ local function IsBaby(variant)
 		or variant == FamiliarVariant.SPRINKLER
 end
 
+---@param entity any
+---@return EntityPlayer?, boolean
+local function GetParent(entity)
+	if entity == nil then return nil, false end
+	if entity.Type == EntityType.ENTITY_PLAYER then
+		return Helpers.GetPtrHashEntity(entity):ToPlayer(), false
+	elseif entity.Type == EntityType.ENTITY_FAMILIAR and IsBaby(entity.Variant) then
+		return entity:ToFamiliar().Player:ToPlayer(), true
+	end
+	return nil, false
+end
+
+---@param tear EntityTear | EntityLaser | EntityBomb | EntityKnife
+---@return EntityPlayer?, boolean
 function Helpers.GetPlayerFromTear(tear)
-	for i = 1, 3 do
-		local check = nil
-		if i == 1 then
-			check = tear.Parent
-		elseif i == 2 then
-			check = tear.SpawnerEntity
-		end
+	for _, entity in ipairs({tear.Parent, tear.SpawnerEntity}) do
+		local check, isFamiliar = GetParent(entity)
 		if check then
-			if check.Type == EntityType.ENTITY_PLAYER then
-				return Helpers.GetPtrHashEntity(check):ToPlayer(), false
-			elseif check.Type == EntityType.ENTITY_FAMILIAR and IsBaby(check.Variant) then
+			if isFamiliar then
 				local data = Helpers.GetData(tear)
 				data.IsIncubusTear = true
-				return check:ToFamiliar().Player:ToPlayer(), true
 			end
+			return check, isFamiliar
 		end
 	end
-	return nil
+	return nil, false
 end
 
 function Helpers.GetPtrHashEntity(entity)

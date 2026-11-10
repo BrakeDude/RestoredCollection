@@ -20,8 +20,7 @@ function LuckySevenBoneSwing:OnKnifeRender(knife)
 
     local player = knife.Parent:ToPlayer()
     if not player:HasCollectible(RestoredCollection.Enums.CollectibleType.COLLECTIBLE_LUCKY_SEVEN) then return end
-    if not Helpers.DoesPlayerHaveRightAmountOfPickups(player) then return end
-
+    
     local sprite = knife:GetSprite()
 
     local animation = sprite:GetAnimation();
@@ -35,7 +34,7 @@ function LuckySevenBoneSwing:OnKnifeRender(knife)
         local chance = Helpers.GetLuckySevenChance(player)
         local rng = knife:GetDropRNG()
 
-        if rng:RandomInt(100) < chance then
+        if rng:RandomInt(100) <= chance then
             local speed = DIRECTION_TO_VECTOR[player:GetFireDirection()] * 9
             local tear = player:FireTear(knife.Position, speed, false, true, false, player, Helpers.GetLuckySevenDamageMult(player))
 
